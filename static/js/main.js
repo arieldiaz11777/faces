@@ -1,11 +1,11 @@
 // Seleccionar el elemento del video
-const video = document.getElementById('video');
+const video = document.getElementById('videoElement');
 
 // Cargar modelos de face-api.js
 async function loadModels() {
     try {
-        // Ruta de los modelos (asegúrate de que estén en la carpeta `models/`)
-        const MODEL_URL = '/static/models';
+        // Ruta de los modelos (asegúrate de que estén en la carpeta `models/` o que se pueda acceder correctamente a ellos)
+        const MODEL_URL = '/static/models';  // Este es el path relativo, asegúrate de que los modelos estén en esa ruta
         await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
         await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
         await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
@@ -18,11 +18,13 @@ async function loadModels() {
 // Iniciar la cámara
 async function startCamera() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true
+        });
+        const video = document.getElementById('videoElement');
         video.srcObject = stream;
-        console.log("Cámara iniciada.");
-    } catch (error) {
-        console.error("Error al acceder a la cámara:", error);
+    } catch (err) {
+        console.error("Error al acceder a la cámara:", err);
     }
 }
 
@@ -35,7 +37,7 @@ async function loadLabeledImages() {
         const descriptions = [];
         for (let i = 1; i <= 2; i++) { // Cambia este número según cuántas imágenes tengas por persona
             try {
-                const imgPath = `/faces/${label}${i}.jpg`;
+                const imgPath = `/faces/${label}${i}.jpg`;  // Las imágenes deben estar en la carpeta 'faces'
                 const img = await faceapi.fetchImage(imgPath);
                 const detection = await faceapi.detectSingleFace(img)
                     .withFaceLandmarks()
