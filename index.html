@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocimiento Facial</title>
-    <script defer src="static/js/face-api.min.js"></script>
-    <script defer src="static/js/main.js"></script>
+
+    <!-- Incluir el script de face-api.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    
+    <!-- Tu archivo CSS si lo tienes -->
+    <link rel="stylesheet" href="static/css/styles.css">
 </head>
-
 <body>
-    <h1>Reconocimiento Facial</h1>
-    <video id="video" width="720" height="560" autoplay muted></video>
-</body>
+    <!-- Elemento de video para la cámara -->
+    <video id="videoElement" width="640" height="480" autoplay muted></video>
 
+    <!-- Aquí el canvas de face-api.js para el dibujo de las caras -->
+    <canvas id="canvas"></canvas>
+
+    <!-- Incluir el archivo JS principal -->
+    <script defer src="static/js/main.js"></script>
+</body>
 </html>
