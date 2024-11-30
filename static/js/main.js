@@ -5,7 +5,7 @@ const video = document.getElementById('videoElement');
 async function loadModels() {
     try {
         // Ruta de los modelos (asegúrate de que estén en la carpeta `models/` o que se pueda acceder correctamente a ellos)
-        const MODEL_URL = './static/models';  // Este es el path relativo, asegúrate de que los modelos estén en esa ruta
+        const MODEL_URL = '/static/models';  // Este es el path relativo, asegúrate de que los modelos estén en esa ruta
         await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
         await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
         await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
