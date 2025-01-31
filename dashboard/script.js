@@ -9,10 +9,10 @@ const firebaseConfig = {
     apiKey: "AIzaSyCWQYVqq6gqJJe9fPMmgNHIAgj6yM_jViE",
     authDomain: "bonos-88a52.firebaseapp.com",
     projectId: "bonos-88a52",
-    storageBucket: "bonos-88a52.firebasestorage.app",
+    storageBucket: "bonos-88a52.appspot.com", // Corregir el formato del storageBucket
     messagingSenderId: "170794030614",
     appId: "1:170794030614:web:f1f4a4cbbcf897e0200737"
-  };
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -41,8 +41,10 @@ onAuthStateChanged(auth, async (user) => {
                 userEmail.textContent = userData.email ? `Email: ${userData.email}` : '';
                 userPhoto.src = userData.foto || "./perfil.png";
 
-                // Guardar el email del usuario en localStorage
-                localStorage.setItem("userEmail", userData.email);
+                // Guardar el email del usuario en localStorage si es válido
+                if (userData.email) {
+                    localStorage.setItem("userEmail", userData.email);
+                }
             } else {
                 console.log("No user data found");
             }
@@ -154,13 +156,25 @@ function displayForm() {
             if (userEmail) {
                 let fileURL = "";
                 if (fileUpload) {
-                    const storageRef = ref(storage, `bonos/${userEmail}/${affiliateNumber}/${fileUpload.name}`);
+                    const timestamp = new Date().getTime();
+                    const storageRef = ref(storage, `bonos/${userEmail}/${affiliateNumber}/${timestamp}_${fileUpload.name}`);
                     await uploadBytes(storageRef, fileUpload);
                     fileURL = await getDownloadURL(storageRef);
                 }
 
-                const bonoRef = doc(db, "usuarios", userEmail, "afiliados", affiliateNumber.replace("/", "_"), "bonos", startDate);
-                await setDoc(bonoRef, {
+                let docName = startDate;
+                let docRef = doc(db, "bonos", affiliateNumber, docName);
+                let docSnap = await getDoc(docRef);
+                let counter = 1;
+
+                while (docSnap.exists()) {
+                    docName = `${startDate}_${String(counter).padStart(2, '0')}`;
+                    docRef = doc(db, "bonos", affiliateNumber, docName);
+                    docSnap = await getDoc(docRef);
+                    counter++;
+                }
+
+                await setDoc(docRef, {
                     numeroAfiliado: affiliateNumber,
                     nombreApellido: fullName,
                     dni: dniNumber,
@@ -180,43 +194,78 @@ function displayForm() {
     });
 }
 
-// Function to display the courses in a container format
-async function displayCourses() {
+// Función para mostrar los bonos en una tabla
+async function mostrarBonos() {
+    // Asegurar que mainContent está definido antes de usarlo
+    const mainContent = document.getElementById("main-content");
+    if (!mainContent) {
+        console.error("Error: No se encontró el contenedor principal.");
+        return;
+    }
+
+    // Insertar estructura de la tabla en el DOM
     mainContent.innerHTML = `
-        <h2>Mis Cursos</h2>
-        <div id="courses-container"></div>
+        <h2>Estado de Bonos</h2>
+        <table id="bonos-table">
+            <thead>
+                <tr>
+                    <th>Número de Afiliado</th>
+                    <th>Nombre y Apellido</th>
+                    <th>DNI</th>
+                    <th>Prestador</th>
+                    <th>Especialidad</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Estado</th>
+                    <th>Archivo</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     `;
 
     try {
-        const userEmail = localStorage.getItem("userEmail");
-        if (userEmail) {
-            const coursesQuery = query(collection(db, "profesores", userEmail, "Cursos"));
-            const querySnapshot = await getDocs(coursesQuery);
-            const coursesContainer = document.getElementById("courses-container");
+        // Obtener referencia a la colección "bonos"
+        const bonosRef = collection(db, "bonos");
+        const snapshot = await getDocs(bonosRef);
+        
+        // Seleccionar el cuerpo de la tabla
+        const bonosTableBody = document.querySelector("#bonos-table tbody");
+        bonosTableBody.innerHTML = ""; // Limpiar tabla antes de agregar datos
+        
+        if (snapshot.empty) {
+            bonosTableBody.innerHTML = "<tr><td colspan='8'>No hay bonos disponibles.</td></tr>";
+            return;
+        }
+        
+        // Recorrer los documentos de la colección
+        for (const doc of snapshot.docs) {
+            const affiliateNumber = doc.id;
+            const bonosSnapshot = await getDocs(collection(db, "bonos", affiliateNumber));
+            
+            bonosSnapshot.forEach(bonoDoc => {
+                const bono = bonoDoc.data();
+                const row = document.createElement("tr");
 
-            querySnapshot.forEach((doc) => {
-                const courseData = doc.data();
-                const courseDiv = document.createElement("div");
-                courseDiv.classList.add("course-item");
-                courseDiv.innerHTML = `
-                    <h3>${courseData.curso}</h3>
-                    <p>Fecha de Inicio: ${courseData.fechaInicio}</p>
-                    <p>Fecha de Finalización: ${courseData.fechaFin}</p>
-                    <p>Cantidad de Clases: ${courseData.cantidadClases}</p>
-                    <p><a href="${courseData.materiales}" target="_blank">Ver Material</a></p>
-                    <img src="${courseData.materiales}" alt="Miniatura" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                row.innerHTML = `
+                    <td>${bono.numeroAfiliado || "N/A"}</td>
+                    <td>${bono.nombreApellido || "N/A"}</td>
+                    <td>${bono.dni || "N/A"}</td>
+                    <td>${bono.prestador || "N/A"}</td>
+                    <td>${bono.especialidad || "N/A"}</td>
+                    <td>${bono.fechaInicio || "N/A"}</td>
+                    <td>${bono.estado || "N/A"}</td>
+                    <td>${bono.archivo ? `<a href="${bono.archivo}" target="_blank">Ver Archivo</a>` : "No disponible"}</td>
                 `;
-                coursesContainer.appendChild(courseDiv);
+
+                bonosTableBody.appendChild(row);
             });
-        } else {
-            console.error("No user email found in localStorage");
         }
     } catch (error) {
-        console.error("Error fetching courses:", error);
+        console.error("Error obteniendo bonos: ", error);
     }
 }
 
-// Ensure elements exist before adding event listeners
+// Asegurar que los elementos existen antes de agregar event listeners
 document.addEventListener("DOMContentLoaded", () => {
     const dashboardBtn = document.getElementById("dashboard-btn");
     const coursesBtn = document.getElementById("courses-btn");
@@ -229,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (coursesBtn) {
         coursesBtn.addEventListener("click", () => {
-            displayCourses();
+            mostrarBonos();
         });
     }
 });
