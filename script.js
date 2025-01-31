@@ -11,13 +11,13 @@ import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBqClsoZiDSO8Pe_426ApZD3fXhZ1-WHPM",
-    authDomain: "aulavirtualsdc.firebaseapp.com",
-    projectId: "aulavirtualsdc",
-    storageBucket: "aulavirtualsdc.firebasestorage.app",
-    messagingSenderId: "378515360304",
-    appId: "1:378515360304:web:2c97ea6f0bc99b4eebbbf5"
-};
+    apiKey: "AIzaSyCWQYVqq6gqJJe9fPMmgNHIAgj6yM_jViE",
+    authDomain: "bonos-88a52.firebaseapp.com",
+    projectId: "bonos-88a52",
+    storageBucket: "bonos-88a52.firebasestorage.app",
+    messagingSenderId: "170794030614",
+    appId: "1:170794030614:web:f1f4a4cbbcf897e0200737"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
