@@ -273,4 +273,45 @@ body.light-mode #bono-form button:hover {
   background-color: #9fab81;
 }
 
+/* Estilos para la tabla de bonos */
+#bonos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#bonos-table th, #bonos-table td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: left;
+}
+
+#bonos-table th {
+  background-color: #333;
+  color: #ccc;
+}
+
+#bonos-table td {
+  background-color: #222;
+  color: #ccc;
+}
+
+body.light-mode #bonos-table th {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+body.light-mode #bonos-table td {
+  background-color: #fff;
+  color: #000;
+}
+
+#bonos-table tr:nth-child(even) {
+  background-color: #2a2a2a;
+}
+
+body.light-mode #bonos-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
 
