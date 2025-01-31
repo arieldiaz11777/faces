@@ -1,0 +1,354 @@
+body {
+    background-color: #000; /* Fondo negro */
+    color: #ccc; /* Texto gris */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body.light-mode {
+    background-color: #fff; /* Fondo blanco */
+    color: #000; /* Texto negro */
+  }
+  
+  body.light-mode h1, 
+  body.light-mode h2, 
+  body.light-mode p, 
+  body.light-mode .sidebar ul li a, 
+  body.light-mode .user-details, 
+  body.light-mode th, 
+  body.light-mode td {
+    color: #000; /* Texto negro */
+  }
+  
+  h1, h2, p {
+    color: #ccc; /* Texto gris */
+    text-align: left;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: auto;
+    flex-direction: row;
+    border-right: none; /* Eliminar la línea vertical existente */
+  }
+  
+  .sidebar {
+    width: 150px; /* Hacer el panel lateral más angosto */
+    background-color: #000000;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-right: 2px solid #9fab81; /* Línea vertical verde suave */
+    height: 100vh; /* Ocupa el total de altura de la web */
+  }
+  
+  body.light-mode .sidebar {
+    background-color: #f0f0f0;
+    border-right: 2px solid #ccc; /* Línea vertical gris */
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin-bottom: 25px;
+  }
+  
+  .sidebar ul li a {
+    color: #ccc; /* Texto gris */
+    text-decoration: none;
+  }
+  
+  body.light-mode .sidebar ul li a {
+    color: #000; /* Texto negro */
+  }
+  
+  .sidebar ul li a:hover {
+    text-decoration: blink;
+  }
+  
+  body.light-mode .sidebar ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  .main-container {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  body.light-mode .main-container {
+    background-color: #fff;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-details {
+    margin-left: 10px; /* Ajustar el margen para que el texto no esté pegado a la foto */
+  }
+  
+  .user-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  
+  .header-separator {
+    border: 0;
+    height: 2px;
+    background: #9fab81; /* Línea verde suave */
+    margin: 20px 0;
+  }
+  
+  body.light-mode .header-separator {
+    background: #ccc; /* Línea gris */
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #676464;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  
+  body.light-mode button {
+    background-color: #ccc;
+    color: #000;
+  }
+  
+  button:hover {
+    background-color: #9fab81;
+  }
+  
+  body.light-mode button:hover {
+    background-color: #9fab81;
+  }
+  
+  #logout-btn {
+    margin-left: auto; /* Add this to push the logout button to the right */
+    margin-right: 20px; /* Añade un espacio extra a la derecha */
+    background-color: transparent;
+    color: #f8f5f5;
+    border: 2px solid #ff0000b3; /* Borde rojo */
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  
+  body.light-mode #logout-btn {
+    color: #000;
+    border: 2px solid #ff0000b3; /* Borde rojo */
+  }
+  
+  #logout-btn:hover {
+    box-shadow: 0 0 10px #ff0000; /* Sombra roja al borde */
+  }
+  
+  body.light-mode #logout-btn:hover {
+    box-shadow: 0 0 10px #ff0000; /* Sombra roja al borde */
+  }
+  
+  #toggle-mode-btn {
+    padding: 10px;
+    background-color: #676464;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: 1px; /* Adjust this margin to control the distance between the logout button and the toggle mode button */
+  }
+  
+  body.light-mode #toggle-mode-btn {
+    background-color: #ccc;
+    color: #000;
+  }
+  
+  #toggle-mode-btn:hover {
+    background-color: #9fab81;
+  }
+  
+  body.light-mode #toggle-mode-btn:hover {
+    background-color: #9fab81;
+  }
+  
+  /*prfesores*/
+  /* Estilo Global (del Dashboard) */
+  body {
+    background-color: #000; 
+    color: #ccc;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h2, p {
+    color: #ccc;
+    text-align: left;
+  }
+  
+  h2 { /* Se asegura de que h2 siempre tenga este estilo */
+    color: #9fab81; /* Este color se mantendrá consistente */
+  }
+  
+  /* Estilo específico para Profesores */
+  .profesores-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: auto;
+    flex-direction: row;
+    padding: 20px;
+  }
+  
+  .profesores-container {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .form-container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 48%;
+    border-radius: 12px; /* Bordes redondeados */
+  }
+  
+  body.light-mode .form-container {
+    background-color: #f9f9f9;
+    color: #000;
+  }
+  
+  .form-container h2 {
+    color: #9fab81;
+  }
+  
+  .table-container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 48%;
+    border-radius: 12px; /* Bordes redondeados */
+  }
+  
+  body.light-mode .table-container {
+    background-color: #f9f9f9;
+    color: #000;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px; /* Bordes redondeados */
+    overflow: hidden; /* Asegura que los bordes redondeados se apliquen correctamente */
+  }
+  
+  body.light-mode table {
+    background-color: #fff;
+    color: #000;
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #444;
+  }
+  
+  th {
+    background-color: #444;
+    color: #fff;
+  }
+  
+  body.light-mode th {
+    background-color: #ccc;
+    color: #000;
+  }
+  
+  td {
+    background-color: #222;
+    color: #ccc;
+  }
+  
+  body.light-mode td {
+    background-color: #f9f9f9;
+    color: #000;
+  }
+  
+  td img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  /* Estilo para campos de formularios */
+  input[type="text"],
+  input[type="date"],
+  input[type="file"],
+  select {
+    width: 30%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #444;
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #222;
+    color: #ccc;
+    display: block; /* Asegura que los campos se muestren en columnas verticales */
+  }
+  
+  body.light-mode input[type="text"],
+  body.light-mode input[type="date"],
+  body.light-mode input[type="file"],
+  body.light-mode select {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+  }
+  
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  input[type="file"]:focus,
+  select:focus {
+    outline: none;
+    border-color: #9fab81; /* Borde verde suave al enfocar */
+  }
+  
+  body.light-mode input[type="text"]:focus,
+  body.light-mode input[type="date"]:focus,
+  body.light-mode input[type="file"]:focus,
+  body.light-mode select:focus {
+    border-color: #9fab81; /* Borde verde suave al enfocar */
+  }
+  
+  .course-item {
+    background-color: #333;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  body.light-mode .course-item {
+    background-color: #f9f9f9;
+    color: #000;
+  }
+  
+  
+  
