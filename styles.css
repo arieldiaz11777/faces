@@ -4,54 +4,54 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-  }
-  
-  h1, h2, p {
+}
+
+h1, h2, p {
     color: #a9fbaa;
     text-align: center;
-  }
-  
-  .container {
+}
+
+.container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     flex-direction: column;
-  }
-  
-  .form-container {
+}
+
+.form-container {
     background: rgb(255 255 255 / 20%);
     padding: 20px;
     border-radius: 8px;
     width: 300px;
-  }
-  
-  label {
+}
+
+label {
     display: block;
     margin-bottom: 8px;
     color: #ffffff;
-  }
-  
-  input {
+}
+
+input {
     width: 95%;
     padding: 8px;
     margin-bottom: 12px;
     border: none;
-    border-bottom: 2px solid #9fab81; /* Cambiar a gris */
+    border-bottom: 2px solid #9fab81;
     background: transparent;
     color: #ffffff;
-  }
-  
-  input::placeholder {
+}
+
+input::placeholder {
     color: #aaa;
-  }
-  
-  input:not(:placeholder-shown) {
-    background: #333333; /* Mantener el fondo gris cuando hay datos */
-    color: #e0e0e0; /* Color del texto apenas distinto */
-  }
-  
-  button {
+}
+
+input:not(:placeholder-shown) {
+    background: #333333;
+    color: #e0e0e0;
+}
+
+button {
     width: 100%;
     padding: 10px;
     background-color: #333333;
@@ -59,72 +59,71 @@ body {
     border: none;
     border-radius: 12px;
     cursor: pointer;
-  }
-  
-  button:hover {
+}
+
+button:hover {
     background-color: #9fab81;
-  }
-  
-  /* Estilos para las opciones de registro, inicio, recuperación y demás */
-  .link-button, .btn-primary {
+}
+
+.link-button, .btn-primary {
     cursor: pointer;
-    color: #888; /* Cambiar a gris */
+    color: #888;
     text-decoration: none;
-  }
-  
-  .link-button:hover, .btn-primary:hover {
-    color: #666; /* Cambiar a un gris más oscuro */
+}
+
+.link-button:hover, .btn-primary:hover {
+    color: #666;
     text-decoration: underline;
-  }
-  
-  .google-register button {
+}
+
+.google-register button {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #333333;
-    color: #888; /* Cambiar a gris */
+    color: #888;
     padding: 10px;
     border: none;
     border-radius: 12px;
     cursor: pointer;
-  }
-  
-  .google-register button:hover {
+}
+
+.google-register button:hover {
     background-color: #9fab81;
-  }
-  
-  .google-register button img {
+}
+
+.google-register button img {
     width: 75px;
     height: 40px;
     border-radius: 25px;
     margin-right: 8px;
-  }
-  
-  .google-register button span {
+}
+
+.google-register button span {
     margin-left: 8px;
-  }
-  
-  .welcome {
-    font-size: 2.5em; /* Aumentar el tamaño de la fuente */
-    transition: opacity 1s ease, filter 1s ease; /* Transición para el desenfoque */
-  }
-  
-  .welcome.hidden {
+}
+
+.welcome {
+    font-size: 2.5em;
+    transition: opacity 1s ease, filter 1s ease;
+}
+
+.welcome.hidden {
     opacity: 0;
-    filter: blur(10px); /* Efecto de desenfoque */
-  }
-  
-  .progress-bar {
+    filter: blur(10px);
+}
+
+.progress-bar {
     width: 100%;
     background-color: #73c393;
     border-radius: 4px;
     overflow: hidden;
     margin-top: 10px;
-  }
-  
-  .progress-bar-fill {
+}
+
+.progress-bar-fill {
     height: 10px;
     width: 0;
     background-color: #34a853;
     transition: width 0.5s ease-in-out;
-  }
+}
