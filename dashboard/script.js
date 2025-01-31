@@ -90,208 +90,94 @@ async function loadContent(url) {
 // Function to display the form in the main content
 function displayForm() {
     mainContent.innerHTML = `
-        <h2>Agregar Curso</h2>
-        <form id="course-form">
-        <label for="course-name">Curso:</label>
-     <select id="course-name" name="course-name" required>
-        <option value="" disabled selected>Seleccione un curso</option>
-        <option value="Neumatica Modulo I">Neumatica Modulo I</option>
-        <option value="Neumatica Modulo II">Neumatica Modulo II</option>
-        <option value="Neumatica Modulo III">Neumatica Modulo III</option>
-        <option value="Mecanica del Automotor Modulo I">Mecanica del Automotor Modulo I</option>
-        <option value="Mecanica del Automotor Modulo II">Mecanica del Automotor Modulo II</option>
-        <option value="Mecanica del Automotor Modulo III">Mecanica del Automotor Modulo III</option>
-        <option value="Mecanica del Automotor Modulo IIII">Mecanica del Automotor Modulo IIII</option>
-        <option value="Cajas Automaticas Modulo I">Cajas Automaticas Modulo I</option>
-        <option value="Cajas Automaticas Modulo II">Cajas Automaticas Modulo II</option>
-        <option value="Cajas Automaticas Modulo III">Cajas Automaticas Modulo III</option>
-        <option value="Hidraulica Modulo I">Hidraulica Modulo I</option>
-        <option value="Hidraulica Modulo II">Hidraulica Modulo II</option>
-        <option value="Hidraulica Modulo III">Hidraulica Modulo III</option>
-        <option value="Electronica del Automotor Modulo I">Electronica del Automotor Modulo I</option>
-        <option value="Electronica del Automotor Modulo II">Electronica del Automotor Modulo II</option>
-        <option value="Electronica del Automotor Modulo III">Electronica del Automotor Modulo III</option>
-        <option value="Soldadura Modulo I">Soldadura Modulo I</option>
-        <option value="Soldadura Modulo II">Soldadura Modulo II</option>
-        <option value="Soldadura Modulo III">Soldadura Modulo III</option>
-        <option value="Inyeccion Electronica Modulo I">Inyeccion Electronica Modulo I</option>
-        <option value="Inyeccion Electronica Modulo II">Inyeccion Electronica Modulo II</option>
-        <option value="Inyeccion Electronica Modulo III">Inyeccion Electronica Modulo III</option>
-        <option value="Mecatronica Modulo I">Mecatronica Modulo I</option>
-        <option value="Mecatronica Modulo II">Mecatronica Modulo II</option>
-        <option value="Mecatronica Modulo III">Mecatronica Modulo III</option>
-     </select>
-            <label for="course-start-date">Fecha de Inicio:</label>
-            <input type="date" id="course-start-date" name="course-start-date" required>
-            <label for="course-end-date">Fecha de Finalización:</label>
-            <input type="date" id="course-end-date" name="course-end-date" required>
-            <label for="course-classes">Cantidad de Clases:</label>
-            <input type="number" id="course-classes" name="course-classes" required>
-            <label for="course-materials">Materiales:</label>
-            <input type="file" id="course-materials" name="course-materials" required>
+        <h2>Nuevo Bono</h2>
+        <form id="bono-form">
+            <label for="affiliate-number">Número de Afiliado:</label>
+            <input type="text" id="affiliate-number" name="affiliate-number" pattern="\\d{6}/\\d{2}" required>
+            <label for="full-name">Nombre y Apellido:</label>
+            <input type="text" id="full-name" name="full-name" required>
+            <label for="dni-number">Número de DNI:</label>
+            <input type="text" id="dni-number" name="dni-number" required>
+            <label for="service-provider">Prestador de Servicio:</label>
+            <select id="service-provider" name="service-provider" required>
+                <option value="" disabled selected>Seleccione un prestador</option>
+                <!-- Agregar 10 opciones de prestadores -->
+                <option value="Prestador 1">Prestador 1</option>
+                <option value="Prestador 2">Prestador 2</option>
+                <option value="Prestador 3">Prestador 3</option>
+                <option value="Prestador 4">Prestador 4</option>
+                <option value="Prestador 5">Prestador 5</option>
+                <option value="Prestador 6">Prestador 6</option>
+                <option value="Prestador 7">Prestador 7</option>
+                <option value="Prestador 8">Prestador 8</option>
+                <option value="Prestador 9">Prestador 9</option>
+                <option value="Prestador 10">Prestador 10</option>
+            </select>
+            <label for="specialty">Especialidad:</label>
+            <select id="specialty" name="specialty" required>
+                <option value="" disabled selected>Seleccione una especialidad</option>
+                <!-- Agregar 10 opciones de especialidades -->
+                <option value="Especialidad 1">Especialidad 1</option>
+                <option value="Especialidad 2">Especialidad 2</option>
+                <option value="Especialidad 3">Especialidad 3</option>
+                <option value="Especialidad 4">Especialidad 4</option>
+                <option value="Especialidad 5">Especialidad 5</option>
+                <option value="Especialidad 6">Especialidad 6</option>
+                <option value="Especialidad 7">Especialidad 7</option>
+                <option value="Especialidad 8">Especialidad 8</option>
+                <option value="Especialidad 9">Especialidad 9</option>
+                <option value="Especialidad 10">Especialidad 10</option>
+            </select>
+            <label for="start-date">Fecha de Inicio:</label>
+            <input type="date" id="start-date" name="start-date" required>
+            <label for="bono-status">Estado de Bono:</label>
+            <input type="text" id="bono-status" name="bono-status" value="Aprobado" readonly>
+            <label for="file-upload">Subir Archivo (opcional):</label>
+            <input type="file" id="file-upload" name="file-upload">
             <button type="submit">Guardar</button>
         </form>
     `;
 
-    document.getElementById("course-form").addEventListener("submit", async (e) => {
+    document.getElementById("bono-form").addEventListener("submit", async (e) => {
         e.preventDefault();
-        const courseName = document.getElementById("course-name").value;
-        const courseStartDate = document.getElementById("course-start-date").value;
-        const courseEndDate = document.getElementById("course-end-date").value;
-        const courseClasses = document.getElementById("course-classes").value;
-        const courseMaterials = document.getElementById("course-materials").files[0];
+        const affiliateNumber = document.getElementById("affiliate-number").value;
+        const fullName = document.getElementById("full-name").value;
+        const dniNumber = document.getElementById("dni-number").value;
+        const serviceProvider = document.getElementById("service-provider").value;
+        const specialty = document.getElementById("specialty").value;
+        const startDate = document.getElementById("start-date").value;
+        const bonoStatus = document.getElementById("bono-status").value;
+        const fileUpload = document.getElementById("file-upload").files[0];
 
         try {
             const userEmail = localStorage.getItem("userEmail");
             if (userEmail) {
-                // Upload file to Firebase Storage
-                const storageRef = ref(storage, `profesores/${userEmail}/Cursos/${courseName}/${courseMaterials.name}`);
-                await uploadBytes(storageRef, courseMaterials);
-                const fileURL = await getDownloadURL(storageRef);
+                let fileURL = "";
+                if (fileUpload) {
+                    const storageRef = ref(storage, `bonos/${userEmail}/${affiliateNumber}/${fileUpload.name}`);
+                    await uploadBytes(storageRef, fileUpload);
+                    fileURL = await getDownloadURL(storageRef);
+                }
 
-                // Save course data to Firestore
-                const courseRef = doc(db, "profesores", userEmail, "Cursos", courseName);
-                await setDoc(courseRef, {
-                    curso: courseName,
-                    fechaInicio: courseStartDate,
-                    fechaFin: courseEndDate,
-                    cantidadClases: courseClasses,
-                    materiales: fileURL
+                const bonoRef = doc(db, "usuarios", userEmail, "afiliados", affiliateNumber.replace("/", "_"), "bonos", startDate);
+                await setDoc(bonoRef, {
+                    numeroAfiliado: affiliateNumber,
+                    nombreApellido: fullName,
+                    dni: dniNumber,
+                    prestador: serviceProvider,
+                    especialidad: specialty,
+                    fechaInicio: startDate,
+                    estado: bonoStatus,
+                    archivo: fileURL
                 });
-                alert("Curso guardado exitosamente");
+                alert("Bono guardado exitosamente");
             } else {
                 console.error("No user email found in localStorage");
             }
         } catch (error) {
-            console.error("Error saving course data:", error);
+            console.error("Error saving bono data:", error);
         }
     });
-}
-
-// Function to display the student form in the main content
-async function displayStudentForm() {
-    mainContent.innerHTML = `
-        <h2>Agregar Alumno a Curso</h2>
-        <form id="student-form">
-            <label for="student-name">Nombre y Apellido:</label>
-            <select id="student-name" name="student-name" required>
-                <option value="" disabled selected>Seleccione un alumno</option>
-            </select>
-            <label for="student-course">Curso:</label>
-            <select id="student-course" name="student-course" required>
-                <option value="" disabled selected>Seleccione un curso</option>
-            </select>
-            <button type="submit">Guardar</button>
-        </form>
-    `;
-
-    try {
-        // Fetch students from the "Alumnos" collection
-        const studentsQuery = query(collection(db, "Alumnos"));
-        const studentsSnapshot = await getDocs(studentsQuery);
-        const studentSelect = document.getElementById("student-name");
-
-        // Fetch all students already added to any course
-        const allCoursesQuery = query(collectionGroup(db, "Alumnos"));
-        const allCoursesSnapshot = await getDocs(allCoursesQuery);
-        const addedStudents = new Set();
-
-        allCoursesSnapshot.forEach((doc) => {
-            addedStudents.add(doc.id);
-        });
-
-        // Populate student dropdown excluding already added students
-        studentsSnapshot.forEach((doc) => {
-            const studentData = doc.data();
-            if (!addedStudents.has(studentData.nombre)) {
-                const option = document.createElement("option");
-                option.value = studentData.nombre;
-                option.textContent = studentData.nombre;
-                studentSelect.appendChild(option);
-            }
-        });
-
-        // Populate course dropdown
-        const userEmail = localStorage.getItem("userEmail");
-        if (userEmail) {
-            const coursesQuery = query(collection(db, "profesores", userEmail, "Cursos"));
-            const coursesSnapshot = await getDocs(coursesQuery);
-            const courseSelect = document.getElementById("student-course");
-
-            coursesSnapshot.forEach((doc) => {
-                const courseData = doc.data();
-                const option = document.createElement("option");
-                option.value = courseData.curso;
-                option.textContent = courseData.curso;
-                courseSelect.appendChild(option);
-            });
-        } else {
-            console.error("No user email found in localStorage");
-        }
-    } catch (error) {
-        console.error("Error fetching data:", error);
-    }
-
-    document.getElementById("student-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const studentName = document.getElementById("student-name").value;
-        const studentCourse = document.getElementById("student-course").value;
-
-        try {
-            const userEmail = localStorage.getItem("userEmail");
-            if (userEmail) {
-                const studentRef = doc(db, "profesores", userEmail, "Cursos", studentCourse, "Alumnos", studentName);
-                await setDoc(studentRef, {
-                    nombre: studentName,
-                    curso: studentCourse
-                });
-                alert("Alumno agregado al curso exitosamente");
-            } else {
-                console.error("No user email found in localStorage");
-            }
-        } catch (error) {
-            console.error("Error saving student data:", error);
-        }
-    });
-}
-
-// Function to display the students in a table
-async function displayStudents() {
-    mainContent.innerHTML = `
-        <h2>Mis Alumnos</h2>
-        <table id="students-table">
-            <thead>
-                <tr>
-                    <th>Nombre y Apellido</th>
-                    <th>Curso</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    `;
-
-    try {
-        const userEmail = localStorage.getItem("userEmail");
-        if (userEmail) {
-            const studentsQuery = query(collection(db, "profesores", userEmail, "Alumnos"));
-            const querySnapshot = await getDocs(studentsQuery);
-            const tbody = document.querySelector("#students-table tbody");
-
-            querySnapshot.forEach((doc) => {
-                const studentData = doc.data();
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${studentData.nombre}</td>
-                    <td>${studentData.curso}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        } else {
-            console.error("No user email found in localStorage");
-        }
-    } catch (error) {
-        console.error("Error fetching students:", error);
-    }
 }
 
 // Function to display the courses in a container format
@@ -330,26 +216,20 @@ async function displayCourses() {
     }
 }
 
-document.getElementById("dashboard-btn").addEventListener("click", () => {
-    displayForm();
-});
+// Ensure elements exist before adding event listeners
+document.addEventListener("DOMContentLoaded", () => {
+    const dashboardBtn = document.getElementById("dashboard-btn");
+    const coursesBtn = document.getElementById("courses-btn");
 
-document.getElementById("courses-btn").addEventListener("click", () => {
-    displayCourses();
-});
+    if (dashboardBtn) {
+        dashboardBtn.addEventListener("click", () => {
+            displayForm();
+        });
+    }
 
-document.getElementById("assignments-btn").addEventListener("click", () => {
-    displayStudentForm();
-});
-
-document.getElementById("grades-btn").addEventListener("click", () => {
-    displayStudents();
-});
-
-document.getElementById("profile-btn").addEventListener("click", () => {
-    loadContent("/c:/AulaTC/profile/index.html");
-});
-
-document.getElementById("resources-btn").addEventListener("click", () => {
-    loadContent("/c:/AulaTC/resources/index.html");
+    if (coursesBtn) {
+        coursesBtn.addEventListener("click", () => {
+            displayCourses();
+        });
+    }
 });
