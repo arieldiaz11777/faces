@@ -87,6 +87,17 @@ async function loadContent(url) {
     }
 }
 
+// Function to format date to dd/mm/aa hh:mm
+function formatDate(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = String(d.getFullYear()).slice(-2);
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
 // Function to display the form in the main content
 function displayForm() {
     mainContent.innerHTML = `
@@ -121,11 +132,8 @@ function displayForm() {
                 <option value="Ecografía">Ecografía</option>
             </select>
 
-            <label for="otraEspecialidad">Otra Especialidad/Estudio:</label>
-            <input type="text" id="otraEspecialidad" name="otraEspecialidad" placeholder="Ingresar manualmente">
-
-            <label for="fechaInicio">Fecha de Inicio:</label>
-            <input type="date" id="fechaInicio" name="fechaInicio" required>
+            <label for="fechaInicio">Fecha y Hora de Inicio:</label>
+            <input type="datetime-local" id="fechaInicio" name="fechaInicio" required>
 
             <label for="archivo">Cargar Archivo (Opcional):</label>
             <input type="file" id="archivo" name="archivo" accept=".pdf,.jpg,.png">
@@ -136,12 +144,14 @@ function displayForm() {
 
     document.getElementById("cuponForm").addEventListener("submit", async (e) => {
         e.preventDefault();
+        const submitButton = e.target.querySelector("button[type='submit']");
+        submitButton.disabled = true; // Disable the button to prevent multiple submissions
+
         const nombre = document.getElementById("nombre").value;
         const dni = document.getElementById("dni").value;
         const afiliado = document.getElementById("afiliado").value;
         const prestador = document.getElementById("prestador").value;
         const especialidad = document.getElementById("especialidad").value;
-        const otraEspecialidad = document.getElementById("otraEspecialidad").value;
         const fechaInicio = document.getElementById("fechaInicio").value;
         const archivo = document.getElementById("archivo").files[0];
 
@@ -161,8 +171,8 @@ function displayForm() {
                     dni,
                     afiliado,
                     prestador,
-                    especialidad: especialidad || otraEspecialidad,
-                    fechaInicio,
+                    especialidad,
+                    fechaInicio: new Date(fechaInicio).toISOString(),
                     archivo: fileURL
                 });
                 alert("Cupón generado exitosamente");
@@ -171,6 +181,8 @@ function displayForm() {
             }
         } catch (error) {
             console.error("Error generating cupon:", error);
+        } finally {
+            submitButton.disabled = false; // Re-enable the button after submission
         }
     });
 }
@@ -179,6 +191,7 @@ function displayForm() {
 async function displayCupones() {
     mainContent.innerHTML = `
         <h2>Cupones Generados</h2>
+        <input type="text" id="filter-afiliado" placeholder="Filtrar por N° Afiliado">
         <table id="cupones-table">
             <thead>
                 <tr>
@@ -211,10 +224,27 @@ async function displayCupones() {
                     <td>${cuponData.afiliado}</td>
                     <td>${cuponData.prestador}</td>
                     <td>${cuponData.especialidad}</td>
-                    <td>${cuponData.fechaInicio}</td>
-                    <td><a href="${cuponData.archivo}" target="_blank">Ver Archivo</a></td>
+                    <td>${formatDate(cuponData.fechaInicio)}</td>
+                    <td>${cuponData.archivo ? `<a href="${cuponData.archivo}" target="_blank">Ver Archivo</a>` : 'No tiene archivo'}</td>
                 `;
                 tbody.appendChild(row);
+            });
+
+            // Add event listener for filtering
+            document.getElementById("filter-afiliado").addEventListener("input", function() {
+                const filterValue = this.value.toLowerCase();
+                const rows = tbody.getElementsByTagName("tr");
+                for (let i = 0; i < rows.length; i++) {
+                    const afiliadoCell = rows[i].getElementsByTagName("td")[2];
+                    if (afiliadoCell) {
+                        const afiliadoText = afiliadoCell.textContent || afiliadoCell.innerText;
+                        if (afiliadoText.toLowerCase().indexOf(filterValue) > -1) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
             });
         } else {
             console.error("No user email found in localStorage");
