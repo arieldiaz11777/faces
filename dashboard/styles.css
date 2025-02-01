@@ -185,28 +185,8 @@ body.light-mode #toggle-mode-btn:hover {
   background-color: #9fab81;
 }
 
-/*prfesores*/
-/* Estilo Global (del Dashboard) */
-body {
-  background-color: #000; 
-  color: #ccc;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-h1, h2, p {
-  color: #ccc;
-  text-align: left;
-}
-
-h2 { /* Se asegura de que h2 siempre tenga este estilo */
-  color: #9fab81; /* Este color se mantendrá consistente */
-}
-
-  
-/* Estilos para el formulario de Nuevo Bono */
-#bono-form {
+/* Estilos para el formulario de Nuevo Cupón */
+#cuponForm {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -218,22 +198,22 @@ h2 { /* Se asegura de que h2 siempre tenga este estilo */
   margin: 0 auto; /* Centrar el formulario */
 }
 
-body.light-mode #bono-form {
+body.light-mode #cuponForm {
   background-color: #f9f9f9;
 }
 
-#bono-form label {
+#cuponForm label {
   color: #ccc;
 }
 
-body.light-mode #bono-form label {
+body.light-mode #cuponForm label {
   color: #000;
 }
 
-#bono-form input[type="text"],
-#bono-form input[type="date"],
-#bono-form input[type="file"],
-#bono-form select {
+#cuponForm input[type="text"],
+#cuponForm input[type="date"],
+#cuponForm input[type="file"],
+#cuponForm select {
   width: 90%;
   padding: 10px;
   border: 1px solid #444;
@@ -242,16 +222,16 @@ body.light-mode #bono-form label {
   color: #ccc;
 }
 
-body.light-mode #bono-form input[type="text"],
-body.light-mode #bono-form input[type="date"],
-body.light-mode #bono-form input[type="file"],
-body.light-mode #bono-form select {
+body.light-mode #cuponForm input[type="text"],
+body.light-mode #cuponForm input[type="date"],
+body.light-mode #cuponForm input[type="file"],
+body.light-mode #cuponForm select {
   background-color: #fff;
   color: #000;
   border: 1px solid #ccc;
 }
 
-#bono-form button {
+#cuponForm button {
   padding: 10px 20px;
   background-color: #676464;
   color: #fff;
@@ -260,57 +240,57 @@ body.light-mode #bono-form select {
   cursor: pointer;
 }
 
-body.light-mode #bono-form button {
+body.light-mode #cuponForm button {
   background-color: #ccc;
   color: #000;
 }
 
-#bono-form button:hover {
+#cuponForm button:hover {
   background-color: #9fab81;
 }
 
-body.light-mode #bono-form button:hover {
+body.light-mode #cuponForm button:hover {
   background-color: #9fab81;
 }
 
-/* Estilos para la tabla de bonos */
-#bonos-table {
+/* Estilos para la tabla de cupones */
+#cupones-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-#bonos-table th, #bonos-table td {
+#cupones-table th, #cupones-table td {
   border: 1px solid #444;
   padding: 10px;
   text-align: left;
 }
 
-#bonos-table th {
+#cupones-table th {
   background-color: #333;
   color: #ccc;
 }
 
-#bonos-table td {
+#cupones-table td {
   background-color: #222;
   color: #ccc;
 }
 
-body.light-mode #bonos-table th {
+body.light-mode #cupones-table th {
   background-color: #f0f0f0;
   color: #000;
 }
 
-body.light-mode #bonos-table td {
+body.light-mode #cupones-table td {
   background-color: #fff;
   color: #000;
 }
 
-#bonos-table tr:nth-child(even) {
+#cupones-table tr:nth-child(even) {
   background-color: #2a2a2a;
 }
 
-body.light-mode #bonos-table tr:nth-child(even) {
+body.light-mode #cupones-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
