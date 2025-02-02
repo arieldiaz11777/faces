@@ -337,4 +337,87 @@ body.light-mode #filter-afiliado {
   }
 }
 
+/* ======== Estilos Generales ======== */
+body {
+  background-color: #000;
+  color: #ccc;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body.light-mode {
+  background-color: #fff;
+  color: #000;
+}
+
+/* ======== Animaciones ======== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+/* ======== Formulario con animación ======== */
+#cuponForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: rgba(51, 51, 51, 0.8);
+  padding: 20px;
+  border-radius: 25px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 45%;
+  margin: 0 auto;
+  
+  /* Animación de entrada */
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+body.light-mode #cuponForm {
+  background-color: rgba(249, 249, 249, 0.8);
+}
+
+/* Clase para ocultar el formulario con animación */
+.hidden {
+  animation: fadeOutDown 0.5s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ======== Tabla con animación ======== */
+#cupones-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-radius: 25px;
+  overflow: hidden;
+  
+  /* Animación de entrada */
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Clase para ocultar la tabla con animación */
+.hidden-table {
+  animation: fadeOutDown 0.5s ease-out forwards;
+  pointer-events: none;
+}
+
 
