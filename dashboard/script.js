@@ -98,82 +98,93 @@ function formatDate(date) {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
+// Function to fetch prestaciones from valores.csv
+async function fetchPrestaciones() {
+    const response = await fetch('valores.csv');
+    const data = await response.text();
+    const lines = data.split('\n').slice(1); // Skip header
+    const prestaciones = lines.map(line => {
+        const [prestacion, monto] = line.split(',');
+        return { prestacion, monto: parseFloat(monto) };
+    });
+    return prestaciones;
+}
+
 // Function to display the form in the main content
-function displayForm() {
+async function displayForm() {
+    const prestaciones = await fetchPrestaciones();
+
     mainContent.innerHTML = `
-        <h2>Generar Cupón de Atención Médica</h2>
-        <form id="cuponForm">
-            <label for="nombre">Nombre y Apellido:</label>
+        <h1>Generar Cupón de Coseguro</h1>
+        <form id="cuponForm" action="#" method="post" enctype="multipart/form-data">
+            <label for="nombre">Nombre del Afiliado:</label>
             <input type="text" id="nombre" name="nombre" required>
 
-            <label for="dni">Número de DNI:</label>
-            <input type="text" id="dni" name="dni" required>
+            <label for="apellido">Apellido del Afiliado:</label>
+            <input type="text" id="apellido" name="apellido" required>
 
-            <label for="afiliado">Número de Afiliado:</label>
-            <input type="text" id="afiliado" name="afiliado" pattern="\\d{6}/\\d{2}" placeholder="000000/00" required>
+            <label for="nro_afiliado">Número de Afiliado:</label>
+            <input type="text" id="nro_afiliado" name="nro_afiliado" required>
 
-            <label for="prestador">Prestador de Servicio:</label>
-            <select id="prestador" name="prestador" required>
-                <option value="" disabled selected>Seleccione un prestador</option>
-                <option value="Prestador 1">Prestador 1</option>
-                <option value="Prestador 2">Prestador 2</option>
-                <option value="Prestador 3">Prestador 3</option>
-                <option value="Prestador 4">Prestador 4</option>
-                <option value="Prestador 5">Prestador 5</option>
+            <label for="prestacion">Prestación:</label>
+            <select id="prestacion" name="prestacion" required>
+                ${prestaciones.map(p => `<option value="${p.prestacion}">${p.prestacion}</option>`).join('')}
             </select>
 
-            <label for="especialidad">Especialidad Médica o Tipo de Estudio:</label>
-            <select id="especialidad" name="especialidad" required>
-                <option value="" disabled selected>Seleccione una opción</option>
-                <option value="Cardiología">Cardiología</option>
-                <option value="Pediatría">Pediatría</option>
-                <option value="Traumatología">Traumatología</option>
-                <option value="Radiografía">Radiografía</option>
-                <option value="Ecografía">Ecografía</option>
-            </select>
+            <label for="fecha">Fecha de la Prestación:</label>
+            <input type="date" id="fecha" name="fecha" required>
 
-            <label for="fechaInicio">Fecha y Hora de Inicio:</label>
-            <input type="datetime-local" id="fechaInicio" name="fechaInicio" required>
+            <label for="importe">Importe del Coseguro:</label>
+            <input type="number" id="importe" name="importe" step="0.01" required readonly>
 
-            <label for="archivo">Cargar Archivo (Opcional):</label>
-            <input type="file" id="archivo" name="archivo" accept=".pdf,.jpg,.png">
+            <label for="comprobante">Comprobante de Pago:</label>
+            <input type="file" id="comprobante" name="comprobante" required>
 
             <button type="submit">Generar Cupón</button>
         </form>
     `;
 
+    const prestacionSelect = document.getElementById("prestacion");
+    const importeInput = document.getElementById("importe");
+
+    prestacionSelect.addEventListener("change", () => {
+        const selectedPrestacion = prestacionSelect.value;
+        const selectedMonto = prestaciones.find(p => p.prestacion === selectedPrestacion).monto;
+        importeInput.value = selectedMonto.toFixed(2);
+    });
+
     document.getElementById("cuponForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const submitButton = e.target.querySelector("button[type='submit']");
-        submitButton.disabled = true; // Disable the button to prevent multiple submissions
+        submitButton.disabled = true;
 
         const nombre = document.getElementById("nombre").value;
-        const dni = document.getElementById("dni").value;
-        const afiliado = document.getElementById("afiliado").value;
-        const prestador = document.getElementById("prestador").value;
-        const especialidad = document.getElementById("especialidad").value;
-        const fechaInicio = document.getElementById("fechaInicio").value;
-        const archivo = document.getElementById("archivo").files[0];
+        const apellido = document.getElementById("apellido").value;
+        const nro_afiliado = document.getElementById("nro_afiliado").value;
+        const prestacion = document.getElementById("prestacion").value;
+        const fecha = document.getElementById("fecha").value;
+        const importe = document.getElementById("importe").value;
+        const comprobante = document.getElementById("comprobante").files[0];
 
         try {
             const userEmail = localStorage.getItem("userEmail");
             if (userEmail) {
                 let fileURL = "";
-                if (archivo) {
-                    const storageRef = ref(storage, `Bonos generados/${userEmail}/Cupones/${archivo.name}`);
-                    await uploadBytes(storageRef, archivo);
+                if (comprobante) {
+                    const storageRef = ref(storage, `Bonos generados/${userEmail}/Cupones/${comprobante.name}`);
+                    await uploadBytes(storageRef, comprobante);
                     fileURL = await getDownloadURL(storageRef);
                 }
 
                 const cuponRef = doc(collection(db, "Bonos generados", userEmail, "Cupones"));
                 await setDoc(cuponRef, {
                     nombre,
-                    dni,
-                    afiliado,
-                    prestador,
-                    especialidad,
-                    fechaInicio: new Date(fechaInicio).toISOString(),
-                    archivo: fileURL
+                    apellido,
+                    nro_afiliado,
+                    prestacion,
+                    fecha: new Date(fecha).toISOString(),
+                    importe,
+                    comprobante: fileURL
                 });
                 alert("Cupón generado exitosamente");
             } else {
@@ -182,9 +193,33 @@ function displayForm() {
         } catch (error) {
             console.error("Error generating cupon:", error);
         } finally {
-            submitButton.disabled = false; // Re-enable the button after submission
+            submitButton.disabled = false;
         }
     });
+
+    // Trigger change event to set initial importe value
+    prestacionSelect.dispatchEvent(new Event('change'));
+}
+
+// Function to generate PDF from cupon data
+async function generatePDF(cuponData, docId) {
+    const { nombre, apellido, nro_afiliado, prestacion, fecha, importe, comprobante } = cuponData;
+    const pdfContent = `
+        <h1>Cupon de Coseguro</h1>
+        <p><strong>Nombre:</strong> ${nombre}</p>
+        <p><strong>Apellido:</strong> ${apellido}</p>
+        <p><strong>N° Afiliado:</strong> ${nro_afiliado}</p>
+        <p><strong>Prestación:</strong> ${prestacion}</p>
+        <p><strong>Fecha:</strong> ${formatDate(fecha)}</p>
+        <p><strong>Importe:</strong> ${importe}</p>
+        <p><strong>Comprobante:</strong> ${comprobante ? `<a href="${comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</p>
+        <p><strong>ID del Documento:</strong> ${docId}</p>
+    `;
+
+    const pdfWindow = window.open("", "_blank");
+    pdfWindow.document.write(pdfContent);
+    pdfWindow.document.close();
+    pdfWindow.print();
 }
 
 // Function to display the cupones in a table
@@ -195,13 +230,13 @@ async function displayCupones() {
         <table id="cupones-table">
             <thead>
                 <tr>
-                    <th>Nombre y Apellido</th>
-                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
                     <th>N° Afiliado</th>
-                    <th>Prestador</th>
-                    <th>Especialidad/Estudio</th>
-                    <th>Fecha de Inicio</th>
-                    <th>Archivo</th>
+                    <th>Prestación</th>
+                    <th>Fecha</th>
+                    <th>Importe</th>
+                    <th>Comprobante</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -220,13 +255,14 @@ async function displayCupones() {
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${cuponData.nombre}</td>
-                    <td>${cuponData.dni}</td>
-                    <td>${cuponData.afiliado}</td>
-                    <td>${cuponData.prestador}</td>
-                    <td>${cuponData.especialidad}</td>
-                    <td>${formatDate(cuponData.fechaInicio)}</td>
-                    <td>${cuponData.archivo ? `<a href="${cuponData.archivo}" target="_blank">Ver Archivo</a>` : 'No tiene archivo'}</td>
+                    <td>${cuponData.apellido}</td>
+                    <td>${cuponData.nro_afiliado}</td>
+                    <td>${cuponData.prestacion}</td>
+                    <td>${formatDate(cuponData.fecha)}</td>
+                    <td>${cuponData.importe}</td>
+                    <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
                 `;
+                row.addEventListener("click", () => generatePDF(cuponData, doc.id));
                 tbody.appendChild(row);
             });
 
