@@ -141,9 +141,6 @@ async function displayForm() {
 
             <button type="submit">Generar Cupón</button>
         </form>
-        <div id="loading-spinner" style="display: none;">
-            <div class="spinner"></div>
-        </div>
     `;
 
     const prestacionSelect = document.getElementById("prestacion");
@@ -159,7 +156,7 @@ async function displayForm() {
         e.preventDefault();
         const submitButton = e.target.querySelector("button[type='submit']");
         submitButton.disabled = true;
-        document.getElementById("loading-spinner").style.display = "flex";
+        submitButton.textContent = "Enviando..."; // Cambiar el texto del botón
 
         const nombre = document.getElementById("nombre").value;
         const dni = document.getElementById("dni").value;
@@ -191,7 +188,7 @@ async function displayForm() {
                 });
 
                 // Save affiliate data in "afiliados" collection
-                const afiliadoRef = doc(db, "afiliados", nro_afiliado);
+                const afiliadoRef = doc(db, "afiliados", nro_afiliado); // Corregir referencia de documento
                 await setDoc(afiliadoRef, {
                     nombre,
                     dni,
@@ -200,7 +197,13 @@ async function displayForm() {
                     fecha_ultima_prestacion: fecha
                 }, { merge: true });
 
-                alert("Cupón generado exitosamente");
+                alert("Cupón generado exitosamente"); // Asegurar que se muestre la alerta
+
+                // Limpiar los campos del formulario
+                e.target.reset();
+
+                // Trigger change event to reset importe value
+                prestacionSelect.dispatchEvent(new Event('change'));
 
                 // Generate PDF
                 generatePDF({
@@ -219,7 +222,7 @@ async function displayForm() {
             console.error("Error generating cupon:", error);
         } finally {
             submitButton.disabled = false;
-            document.getElementById("loading-spinner").style.display = "none";
+            submitButton.textContent = "Generar Cupón"; // Restaurar el texto del botón
         }
     });
 
@@ -227,37 +230,7 @@ async function displayForm() {
     prestacionSelect.dispatchEvent(new Event('change'));
 }
 
-// Add CSS for the spinner
-const style = document.createElement('style');
-style.innerHTML = `
-    .spinner {
-        border: 16px solid #f3f3f3;
-        border-top: 16px solid #3498db;
-        border-radius: 50%;
-        width: 120px;
-        height: 120px;
-        animation: spin 2s linear infinite;
-    }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    #loading-spinner {
-        display: none;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
-        z-index: 1000;
-    }
-`;
-document.head.appendChild(style);
 
 // Function to display the cupones in a table
 async function displayCupones() {

@@ -329,20 +329,6 @@ body.light-mode #filter-afiliado {
   cursor: not-allowed;
 }
 
-#cuponForm button:disabled::after {
-  content: " Enviando...";
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
 /* ======== Estilos Generales ======== */
 body {
   background-color: #000;
