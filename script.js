@@ -50,7 +50,11 @@ async function registerWithGoogle() {
         });
 
         showAlert(`¡Bienvenido/a, ${user.displayName}! `);
-        window.location.href = "./dashboard/index.html";
+        if (user.email === "todocodigos1177@gmail.com") {
+            window.location.href = "./central/index.html";
+        } else {
+            window.location.href = "./dashboard/index.html";
+        }
     } catch (error) {
         console.error("Error en el registro con Google:", error);
         showAlert("Hubo un error en el registro con Google: " + error.message, "error");
