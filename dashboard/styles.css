@@ -110,11 +110,12 @@ body.light-mode .main-container {
   border: 0;
   height: 2px;
   background: #9fab81; /* Línea verde suave */
-  margin: 20px 0;
+  margin: 10px 0; /* Ajustar el margen */
 }
 
 body.light-mode .header-separator {
   background: #ccc; /* Línea gris */
+  margin: 10px 0; /* Ajustar el margen */
 }
 
 button {
@@ -233,6 +234,24 @@ body.light-mode #cuponForm input[type="number"] {
   background-color: #fff;
   color: #000;
   border: 1px solid #ccc;
+}
+
+#cuponForm input[type="text"]::placeholder,
+#cuponForm input[type="date"]::placeholder,
+#cuponForm input[type="file"]::placeholder,
+#cuponForm select::placeholder,
+#cuponForm input[type="datetime-local"]::placeholder,
+#cuponForm input[type="number"]::placeholder {
+  color: #ccc;
+}
+
+body.light-mode #cuponForm input[type="text"]::placeholder,
+body.light-mode #cuponForm input[type="date"]::placeholder,
+body.light-mode #cuponForm input[type="file"]::placeholder,
+body.light-mode #cuponForm select::placeholder,
+body.light-mode #cuponForm input[type="datetime-local"]::placeholder,
+body.light-mode #cuponForm input[type="number"]::placeholder {
+  color: #000;
 }
 
 #cuponForm button {

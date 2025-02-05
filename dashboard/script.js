@@ -117,28 +117,16 @@ async function displayForm() {
     mainContent.innerHTML = `
         <h1>Generar Cupón de Coseguro</h1>
         <form id="cuponForm" action="#" method="post" enctype="multipart/form-data">
-            <label for="nombre">Nombre y Apellido del Afiliado:</label>
-            <input type="text" id="nombre" name="nombre" required>
-
-            <label for="dni">DNI del Afiliado:</label>
-            <input type="text" id="dni" name="dni" required>
-
-            <label for="nro_afiliado">Número de Afiliado:</label>
-            <input type="text" id="nro_afiliado" name="nro_afiliado" required>
-
-            <label for="prestacion">Prestación:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Nombre y Apellido del Afiliado" required>
+            <input type="text" id="dni" name="dni" placeholder="DNI del Afiliado" required>
+            <input type="text" id="nro_afiliado" name="nro_afiliado" placeholder="Número de Afiliado" required>
             <select id="prestacion" name="prestacion" required>
+                <option value="" disabled selected>Prestación</option>
                 ${prestaciones.map(p => `<option value="${p.prestacion}">${p.prestacion}</option>`).join('')}
             </select>
-
             <input type="hidden" id="fecha" name="fecha">
-
-            <label for="importe">Importe del Coseguro:</label>
-            <input type="number" id="importe" name="importe" step="0.01" required readonly>
-
-            <label for="comprobante">Comprobante de Pago:</label>
+            <input type="number" id="importe" name="importe" step="0.01" placeholder="Importe del Coseguro" required readonly>
             <input type="file" id="comprobante" name="comprobante" required>
-
             <button type="submit">Generar Cupón</button>
         </form>
     `;
