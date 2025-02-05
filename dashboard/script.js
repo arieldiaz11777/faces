@@ -187,15 +187,7 @@ async function displayForm() {
                     comprobante: fileURL
                 });
 
-                // Save affiliate data in "afiliados" collection
-                const afiliadoRef = doc(db, "afiliados", nro_afiliado); // Corregir referencia de documento
-                await setDoc(afiliadoRef, {
-                    nombre,
-                    dni,
-                    nro_afiliado,
-                    titular: nro_afiliado.endsWith("00"),
-                    fecha_ultima_prestacion: fecha
-                }, { merge: true });
+               
 
                 alert("Cupón generado exitosamente"); // Asegurar que se muestre la alerta
 
