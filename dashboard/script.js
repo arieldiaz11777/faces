@@ -117,11 +117,11 @@ async function displayForm() {
     mainContent.innerHTML = `
         <h1>Generar Cupón de Coseguro</h1>
         <form id="cuponForm" action="#" method="post" enctype="multipart/form-data">
-            <label for="nombre">Nombre del Afiliado:</label>
+            <label for="nombre">Nombre y Apellido del Afiliado:</label>
             <input type="text" id="nombre" name="nombre" required>
 
-            <label for="apellido">Apellido del Afiliado:</label>
-            <input type="text" id="apellido" name="apellido" required>
+            <label for="dni">DNI del Afiliado:</label>
+            <input type="text" id="dni" name="dni" required>
 
             <label for="nro_afiliado">Número de Afiliado:</label>
             <input type="text" id="nro_afiliado" name="nro_afiliado" required>
@@ -131,8 +131,7 @@ async function displayForm() {
                 ${prestaciones.map(p => `<option value="${p.prestacion}">${p.prestacion}</option>`).join('')}
             </select>
 
-            <label for="fecha">Fecha de la Prestación:</label>
-            <input type="date" id="fecha" name="fecha" required>
+            <input type="hidden" id="fecha" name="fecha">
 
             <label for="importe">Importe del Coseguro:</label>
             <input type="number" id="importe" name="importe" step="0.01" required readonly>
@@ -142,6 +141,9 @@ async function displayForm() {
 
             <button type="submit">Generar Cupón</button>
         </form>
+        <div id="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+        </div>
     `;
 
     const prestacionSelect = document.getElementById("prestacion");
@@ -157,12 +159,13 @@ async function displayForm() {
         e.preventDefault();
         const submitButton = e.target.querySelector("button[type='submit']");
         submitButton.disabled = true;
+        document.getElementById("loading-spinner").style.display = "flex";
 
         const nombre = document.getElementById("nombre").value;
-        const apellido = document.getElementById("apellido").value;
+        const dni = document.getElementById("dni").value;
         const nro_afiliado = document.getElementById("nro_afiliado").value;
         const prestacion = document.getElementById("prestacion").value;
-        const fecha = document.getElementById("fecha").value;
+        const fecha = new Date().toISOString();
         const importe = document.getElementById("importe").value;
         const comprobante = document.getElementById("comprobante").files[0];
 
@@ -179,14 +182,36 @@ async function displayForm() {
                 const cuponRef = doc(collection(db, "Bonos generados", userEmail, "Cupones"));
                 await setDoc(cuponRef, {
                     nombre,
-                    apellido,
+                    dni,
                     nro_afiliado,
                     prestacion,
-                    fecha: new Date(fecha).toISOString(),
+                    fecha,
                     importe,
                     comprobante: fileURL
                 });
+
+                // Save affiliate data in "afiliados" collection
+                const afiliadoRef = doc(db, "afiliados", nro_afiliado);
+                await setDoc(afiliadoRef, {
+                    nombre,
+                    dni,
+                    nro_afiliado,
+                    titular: nro_afiliado.endsWith("00"),
+                    fecha_ultima_prestacion: fecha
+                }, { merge: true });
+
                 alert("Cupón generado exitosamente");
+
+                // Generate PDF
+                generatePDF({
+                    nombre,
+                    dni,
+                    nro_afiliado,
+                    prestacion,
+                    fecha,
+                    importe,
+                    comprobante: fileURL
+                }, cuponRef.id);
             } else {
                 console.error("No user email found in localStorage");
             }
@@ -194,6 +219,7 @@ async function displayForm() {
             console.error("Error generating cupon:", error);
         } finally {
             submitButton.disabled = false;
+            document.getElementById("loading-spinner").style.display = "none";
         }
     });
 
@@ -201,26 +227,37 @@ async function displayForm() {
     prestacionSelect.dispatchEvent(new Event('change'));
 }
 
-// Function to generate PDF from cupon data
-async function generatePDF(cuponData, docId) {
-    const { nombre, apellido, nro_afiliado, prestacion, fecha, importe, comprobante } = cuponData;
-    const pdfContent = `
-        <h1>Cupon de Coseguro</h1>
-        <p><strong>Nombre:</strong> ${nombre}</p>
-        <p><strong>Apellido:</strong> ${apellido}</p>
-        <p><strong>N° Afiliado:</strong> ${nro_afiliado}</p>
-        <p><strong>Prestación:</strong> ${prestacion}</p>
-        <p><strong>Fecha:</strong> ${formatDate(fecha)}</p>
-        <p><strong>Importe:</strong> ${importe}</p>
-        <p><strong>Comprobante:</strong> ${comprobante ? `<a href="${comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</p>
-        <p><strong>ID del Documento:</strong> ${docId}</p>
-    `;
+// Add CSS for the spinner
+const style = document.createElement('style');
+style.innerHTML = `
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
 
-    const pdfWindow = window.open("", "_blank");
-    pdfWindow.document.write(pdfContent);
-    pdfWindow.document.close();
-    pdfWindow.print();
-}
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #loading-spinner {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+    }
+`;
+document.head.appendChild(style);
 
 // Function to display the cupones in a table
 async function displayCupones() {
@@ -230,8 +267,9 @@ async function displayCupones() {
         <table id="cupones-table">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
+                    <th></th>
+                    <th>Nombre y Apellido</th>
+                    <th>DNI</th>
                     <th>N° Afiliado</th>
                     <th>Prestación</th>
                     <th>Fecha</th>
@@ -254,15 +292,16 @@ async function displayCupones() {
                 const cuponData = doc.data();
                 const row = document.createElement("tr");
                 row.innerHTML = `
+                    <td><button class="pdf-btn">📄</button></td>
                     <td>${cuponData.nombre}</td>
-                    <td>${cuponData.apellido}</td>
+                    <td>${cuponData.dni}</td>
                     <td>${cuponData.nro_afiliado}</td>
                     <td>${cuponData.prestacion}</td>
                     <td>${formatDate(cuponData.fecha)}</td>
                     <td>${cuponData.importe}</td>
                     <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
                 `;
-                row.addEventListener("click", () => generatePDF(cuponData, doc.id));
+                row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, doc.id));
                 tbody.appendChild(row);
             });
 
@@ -271,7 +310,7 @@ async function displayCupones() {
                 const filterValue = this.value.toLowerCase();
                 const rows = tbody.getElementsByTagName("tr");
                 for (let i = 0; i < rows.length; i++) {
-                    const afiliadoCell = rows[i].getElementsByTagName("td")[2];
+                    const afiliadoCell = rows[i].getElementsByTagName("td")[3];
                     if (afiliadoCell) {
                         const afiliadoText = afiliadoCell.textContent || afiliadoCell.innerText;
                         if (afiliadoText.toLowerCase().indexOf(filterValue) > -1) {
@@ -288,6 +327,109 @@ async function displayCupones() {
     } catch (error) {
         console.error("Error fetching cupones:", error);
     }
+}
+
+async function generatePDF(cuponData, docId) {
+    const { nombre, dni, nro_afiliado, prestacion, fecha, importe, comprobante } = cuponData;
+
+    // Verificamos si el comprobante es una imagen o un PDF
+    const isImage = comprobante && /\.(jpeg|jpg|png|gif)$/i.test(comprobante);
+    const isPDF = comprobante && /\.pdf$/i.test(comprobante);
+
+    const pdfContent = `
+        <html>
+        <head>
+            <title>Cupon de Coseguro</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background-color: #f8f8f8;
+                }
+                .container {
+                    width: 50%;
+                    padding: 20px;
+                    border-radius: 15px;
+                    background: white;
+                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                    text-align: left;
+                }
+                h1 {
+                    text-align: center;
+                    color: #333;
+                    border-bottom: 2px solid #007BFF;
+                    padding-bottom: 10px;
+                }
+                p {
+                    font-size: 14px;
+                    margin: 8px 0;
+                    color: #555;
+                }
+                strong {
+                    color: #000;
+                }
+                .comprobante {
+                    margin-top: 10px;
+                    text-align: center;
+                }
+                .comprobante a {
+                    text-decoration: none;
+                    color: #007BFF;
+                    font-weight: bold;
+                }
+                .comprobante-view {
+                    margin-top: 15px;
+                    text-align: center;
+                }
+                iframe {
+                    width: 100%;
+                    height: 400px;
+                    border: none;
+                }
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 10px;
+                    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Cupon de Coseguro OSCHOCA</h1>
+                <p><strong>Codigo:</strong> ${docId}</p>
+                <p><strong>Nombre y Apellido:</strong> ${nombre}</p>
+                <p><strong>DNI:</strong> ${dni}</p>
+                <p><strong>N° Afiliado:</strong> ${nro_afiliado}</p>
+                <p><strong>Prestación:</strong> ${prestacion}</p>
+                <p><strong>Fecha:</strong> ${formatDate(fecha)}</p>
+                <p><strong>Importe:</strong> $${importe}</p>
+                
+                <p class="comprobante">
+                    <strong>Comprobante:</strong> 
+                    ${comprobante ? `<a href="${comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}
+                </p>
+
+                ${comprobante ? `
+                <div class="comprobante-view">
+                    ${isPDF ? `<iframe src="${comprobante}"></iframe>` : ''}
+                    ${isImage ? `<img src="${comprobante}" alt="Comprobante">` : ''}
+                </div>` : ''}
+                
+               
+            </div>
+        </body>
+        </html>
+    `;
+
+    const pdfWindow = window.open("", "_blank");
+    pdfWindow.document.write(pdfContent);
+    pdfWindow.document.close();
+    pdfWindow.print();
 }
 
 document.getElementById("dashboard-btn").addEventListener("click", () => {

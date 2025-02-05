@@ -214,7 +214,8 @@ body.light-mode #cuponForm label {
 #cuponForm input[type="date"],
 #cuponForm input[type="file"],
 #cuponForm select,
-#cuponForm input[type="datetime-local"] {
+#cuponForm input[type="datetime-local"],
+#cuponForm input[type="number"] {
   width: 90%;
   padding: 10px;
   border: 1px solid #444;
@@ -227,7 +228,8 @@ body.light-mode #cuponForm input[type="text"],
 body.light-mode #cuponForm input[type="date"],
 body.light-mode #cuponForm input[type="file"],
 body.light-mode #cuponForm select,
-body.light-mode #cuponForm input[type="datetime-local"] {
+body.light-mode #cuponForm input[type="datetime-local"],
+body.light-mode #cuponForm input[type="number"] {
   background-color: #fff;
   color: #000;
   border: 1px solid #ccc;
@@ -262,6 +264,10 @@ body.light-mode #cuponForm button:hover {
   margin-top: 20px;
   border-radius: 25px;
   overflow: hidden; /* Para que los bordes redondeados se apliquen correctamente */
+  
+  /* Animación de entrada */
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 #cupones-table th, #cupones-table td {
