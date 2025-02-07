@@ -81,22 +81,22 @@ button:hover {
     align-items: center;
     justify-content: center;
     background-color: #333333;
-    color: #888;
-    padding: 10px;
+    color: #fff;
+    padding: 20px; /* Aumentar el padding para hacer el botón más grande */
+    font-size: 1.5em; /* Aumentar el tamaño del texto */
     border: none;
     border-radius: 12px;
     cursor: pointer;
+    width: 100%; /* Hacer el botón más ancho */
 }
 
 .google-register button:hover {
     background-color: #9fab81;
 }
 
+// Eliminar la imagen del botón
 .google-register button img {
-    width: 75px;
-    height: 40px;
-    border-radius: 25px;
-    margin-right: 8px;
+    display: none;
 }
 
 .google-register button span {
