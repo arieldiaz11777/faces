@@ -173,7 +173,7 @@ async function displayForm() {
                     fecha,
                     importe,
                     comprobante: fileURL,
-                    usuario: userName // Guardar el email del usuario que generó el cupón
+                    usuario: userEmail // Guardar el email del usuario que generó el cupón
                 });
 
                 alert("Cupón generado exitosamente"); // Asegurar que se muestre la alerta
