@@ -112,101 +112,11 @@ async function fetchPrestaciones() {
 
 // Función para mostrar el formulario en el contenido principal
 async function displayForm() {
-    const prestaciones = await fetchPrestaciones();
-
+    // Eliminar el contenido del formulario
     mainContent.innerHTML = `
         <h1>Generar Cupón de Coseguro</h1>
-        <form id="cuponForm" action="#" method="post" enctype="multipart/form-data">
-            <input type="text" id="nombre" name="nombre" placeholder="Nombre y Apellido del Afiliado" required>
-            <input type="text" id="dni" name="dni" placeholder="DNI del Afiliado" required>
-            <input type="text" id="nro_afiliado" name="nro_afiliado" placeholder="Número de Afiliado" required>
-            <select id="prestacion" name="prestacion" required>
-                <option value="" disabled selected>Prestación</option>
-                ${prestaciones.map(p => `<option value="${p.prestacion}">${p.prestacion}</option>`).join('')}
-            </select>
-            <input type="hidden" id="fecha" name="fecha">
-            <input type="number" id="importe" name="importe" step="0.01" placeholder="Importe del Coseguro" required readonly>
-            <input type="file" id="comprobante" name="comprobante" required>
-            <button type="submit">Generar Cupón</button>
-        </form>
+        <p>Esta funcionalidad ha sido deshabilitada.</p>
     `;
-
-    const prestacionSelect = document.getElementById("prestacion");
-    const importeInput = document.getElementById("importe");
-
-    prestacionSelect.addEventListener("change", () => {
-        const selectedPrestacion = prestacionSelect.value;
-        const selectedMonto = prestaciones.find(p => p.prestacion === selectedPrestacion).monto;
-        importeInput.value = selectedMonto.toFixed(2);
-    });
-
-    document.getElementById("cuponForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const submitButton = e.target.querySelector("button[type='submit']");
-        submitButton.disabled = true;
-        submitButton.textContent = "Enviando..."; // Cambiar el texto del botón
-
-        const nombre = document.getElementById("nombre").value;
-        const dni = document.getElementById("dni").value;
-        const nro_afiliado = document.getElementById("nro_afiliado").value;
-        const prestacion = document.getElementById("prestacion").value;
-        const fecha = new Date().toISOString();
-        const importe = document.getElementById("importe").value;
-        const comprobante = document.getElementById("comprobante").files[0];
-
-        try {
-            const userEmail = localStorage.getItem("userEmail");
-            if (userEmail) {
-                let fileURL = "";
-                if (comprobante) {
-                    const storageRef = ref(storage, `Bonos generados/${userEmail}/Cupones/${comprobante.name}`);
-                    await uploadBytes(storageRef, comprobante);
-                    fileURL = await getDownloadURL(storageRef);
-                }
-
-                const cuponRef = doc(collection(db, "Bonos generados", userEmail, "Cupones"));
-                await setDoc(cuponRef, {
-                    nombre,
-                    dni,
-                    nro_afiliado,
-                    prestacion,
-                    fecha,
-                    importe,
-                    comprobante: fileURL,
-                    usuario: userEmail // Guardar el email del usuario que generó el cupón
-                });
-
-                alert("Cupón generado exitosamente"); // Asegurar que se muestre la alerta
-
-                // Limpiar los campos del formulario
-                e.target.reset();
-
-                // Disparar evento de cambio para restablecer el valor del importe
-                prestacionSelect.dispatchEvent(new Event('change'));
-
-                // Generar PDF
-                generatePDF({
-                    nombre,
-                    dni,
-                    nro_afiliado,
-                    prestacion,
-                    fecha,
-                    importe,
-                    comprobante: fileURL
-                }, cuponRef.id);
-            } else {
-                console.error("No se encontró el email del usuario en localStorage");
-            }
-        } catch (error) {
-            console.error("Error al generar el cupón:", error);
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Generar Cupón"; // Restaurar el texto del botón
-        }
-    });
-
-    // Disparar evento de cambio para establecer el valor inicial del importe
-    prestacionSelect.dispatchEvent(new Event('change'));
 }
 
 // Función para mostrar los cupones en una tabla
@@ -379,10 +289,14 @@ async function generatePDF(cuponData, docId) {
     pdfWindow.print();
 }
 
-document.getElementById("dashboard-btn").addEventListener("click", () => {
-    displayForm();
-});
+// Eliminar el evento del botón "dashboard-btn" que ya no existe
+// document.getElementById("dashboard-btn").addEventListener("click", () => {
+//     displayForm();
+// });
 
 document.getElementById("courses-btn").addEventListener("click", () => {
     displayCupones();
 });
+
+// Mostrar la tabla de cupones al cargar la página
+displayCupones();
