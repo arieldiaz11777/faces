@@ -1,7 +1,7 @@
 // Importar los módulos necesarios de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, getDocs, collectionGroup } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, getDocs, collectionGroup, where } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-storage.js";
 
 // Configuración de Firebase
@@ -300,3 +300,95 @@ document.getElementById("courses-btn").addEventListener("click", () => {
 
 // Mostrar la tabla de cupones al cargar la página
 displayCupones();
+
+// Función para mostrar la lista de usuarios
+async function displayUserList() {
+    mainContent.innerHTML = `
+        <h2>Lista de Usuarios</h2>
+        <ul id="user-list"></ul>
+    `;
+
+    try {
+        const usersQuery = query(collection(db, "Bonos generados"));
+        const querySnapshot = await getDocs(usersQuery);
+        const userList = document.getElementById("user-list");
+
+        querySnapshot.forEach((doc) => {
+            const userData = doc.data();
+            if (userData.email !== "todocodigos1177@gmail.com") {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${userData.nombre || ''} ${userData.apellido || ''}`.trim();
+                listItem.addEventListener("click", () => displayUserCupones(userData.email));
+                userList.appendChild(listItem);
+            }
+        });
+
+        userList.style.display = "block";
+    } catch (error) {
+        console.error("Error al obtener la lista de usuarios:", error);
+    }
+}
+
+// Función para mostrar los cupones generados por un usuario
+async function displayUserCupones(email) {
+    mainContent.innerHTML = `
+        <h2>Cupones Generados por ${email}</h2>
+        <p id="cupones-count"></p>
+        <p id="total-importe"></p>
+        <table id="cupones-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nombre y Apellido</th>
+                    <th>DNI</th>
+                    <th>N° Afiliado</th>
+                    <th>Prestación</th>
+                    <th>Fecha</th>
+                    <th>Importe</th>
+                    <th>Comprobante</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    `;
+
+    try {
+        const cuponesQuery = query(collectionGroup(db, "Cupones"), where("usuario", "==", email));
+        const querySnapshot = await getDocs(cuponesQuery);
+        const tbody = document.querySelector("#cupones-table tbody");
+
+        let cuponCount = 0;
+        let totalImporte = 0;
+
+        querySnapshot.forEach((doc) => {
+            const cuponData = doc.data();
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><button class="pdf-btn">📄</button></td>
+                <td>${cuponData.nombre}</td>
+                <td>${cuponData.dni}</td>
+                <td>${cuponData.nro_afiliado}</td>
+                <td>${cuponData.prestacion}</td>
+                <td>${formatDate(cuponData.fecha)}</td>
+                <td>${cuponData.importe}</td>
+                <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
+                <td>${cuponData.usuario || 'Desconocido'}</td>
+            `;
+            row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, doc.id));
+            tbody.appendChild(row);
+
+            cuponCount++;
+            totalImporte += parseFloat(cuponData.importe) || 0;
+        });
+
+        document.getElementById("cupones-count").textContent = `Cantidad de cupones: ${cuponCount}`;
+        document.getElementById("total-importe").textContent = `Total Importe: $${totalImporte.toFixed(2)}`;
+    } catch (error) {
+        console.error("Error al obtener los cupones del usuario:", error);
+    }
+}
+
+document.getElementById("summary-btn").addEventListener("click", () => {
+    displayUserList();
+});
