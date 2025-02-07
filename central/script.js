@@ -332,9 +332,13 @@ async function displayUserList() {
 // Función para mostrar los cupones generados por un usuario
 async function displayUserCupones(email) {
     mainContent.innerHTML = `
-        <h2>Cupones Generados por ${email}</h2>
-        <p id="cupones-count"></p>
-        <p id="total-importe"></p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Cupones Generados por ${email}</h2>
+            <div>
+                <p id="cupones-count" style="margin: 0;"></p>
+                <p id="total-importe" style="margin: 0;"></p>
+            </div>
+        </div>
         <table id="cupones-table">
             <thead>
                 <tr>
