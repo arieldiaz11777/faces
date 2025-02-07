@@ -51,7 +51,7 @@ async function registerWithGoogle() {
 
         showAlert(`¡Bienvenido/a, ${user.displayName}! `);
         if (user.email === "todocodigos1177@gmail.com") {
-            window.location.href = "./central/index.html";
+            window.location.href = "./central/index.html";//redireccionar a la pagina de administrador
         } else {
             window.location.href = "./dashboard/index.html";
         }
