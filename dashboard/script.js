@@ -172,20 +172,19 @@ async function displayForm() {
                     prestacion,
                     fecha,
                     importe,
-                    comprobante: fileURL
+                    comprobante: fileURL,
+                    usuario: userEmail // Guardar el email del usuario que generó el cupón
                 });
-
-               
 
                 alert("Cupón generado exitosamente"); // Asegurar que se muestre la alerta
 
                 // Limpiar los campos del formulario
                 e.target.reset();
 
-                // Trigger change event to reset importe value
+                // Disparar evento de cambio para restablecer el valor del importe
                 prestacionSelect.dispatchEvent(new Event('change'));
 
-                // Generate PDF
+                // Generar PDF
                 generatePDF({
                     nombre,
                     dni,
@@ -196,21 +195,19 @@ async function displayForm() {
                     comprobante: fileURL
                 }, cuponRef.id);
             } else {
-                console.error("No user email found in localStorage");
+                console.error("No se encontró el email del usuario en localStorage");
             }
         } catch (error) {
-            console.error("Error generating cupon:", error);
+            console.error("Error al generar el cupón:", error);
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = "Generar Cupón"; // Restaurar el texto del botón
         }
     });
 
-    // Trigger change event to set initial importe value
+    // Disparar evento de cambio para establecer el valor inicial del importe
     prestacionSelect.dispatchEvent(new Event('change'));
 }
-
-
 
 // Function to display the cupones in a table
 async function displayCupones() {
