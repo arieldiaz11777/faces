@@ -188,15 +188,7 @@ body {
   
   /* Estilos para el formulario de Nuevo Cupón */
   #cuponForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background-color: rgba(51, 51, 51, 0.8); /* Fondo transparente */
-    padding: 20px;
-    border-radius: 25px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 45%;
-    margin: 0 auto; /* Centrar el formulario */
+    display: none; /* Ocultar el formulario */
   }
   
   body.light-mode #cuponForm {
@@ -387,19 +379,7 @@ body {
   
   /* ======== Formulario con animación ======== */
   #cuponForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background-color: rgba(51, 51, 51, 0.8);
-    padding: 20px;
-    border-radius: 25px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 45%;
-    margin: 0 auto;
-    
-    /* Animación de entrada */
-    opacity: 0;
-    animation: fadeInUp 0.5s ease-out forwards;
+    display: none; /* Ocultar el formulario */
   }
   
   body.light-mode #cuponForm {
@@ -430,6 +410,5 @@ body {
     animation: fadeOutDown 0.5s ease-out forwards;
     pointer-events: none;
   }
-  
-  
-  
+
+
