@@ -399,7 +399,7 @@ body.light-mode {
   
   /* Animación de entrada */
   opacity: 0;
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeInUp 1.5s ease-out forwards;
 }
 
 body.light-mode #cuponForm {
@@ -408,7 +408,7 @@ body.light-mode #cuponForm {
 
 /* Clase para ocultar el formulario con animación */
 .hidden {
-  animation: fadeOutDown 0.5s ease-out forwards;
+  animation: fadeOutDown 1.5s ease-out forwards;
   pointer-events: none;
 }
 
@@ -422,12 +422,12 @@ body.light-mode #cuponForm {
   
   /* Animación de entrada */
   opacity: 0;
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeInUp 1.5s ease-out forwards;
 }
 
 /* Clase para ocultar la tabla con animación */
 .hidden-table {
-  animation: fadeOutDown 0.5s ease-out forwards;
+  animation: fadeOutDown 1.5s ease-out forwards;
   pointer-events: none;
 }
 
