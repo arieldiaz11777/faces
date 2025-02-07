@@ -1,10 +1,10 @@
-// Import necessary modules from Firebase
+// Importar los módulos necesarios de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, query, getDocs, collectionGroup } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-storage.js";
 
-// Firebase Configuration
+// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCWQYVqq6gqJJe9fPMmgNHIAgj6yM_jViE",
     authDomain: "bonos-88a52.firebaseapp.com",
@@ -14,29 +14,29 @@ const firebaseConfig = {
     appId: "1:170794030614:web:f1f4a4cbbcf897e0200737"
 };
 
-// Initialize Firebase
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Variables for user info
+// Variables para la información del usuario
 const userName = document.getElementById("user-name");
 const userEmail = document.getElementById("user-email");
 const userPhoto = document.querySelector(".user-photo");
 
-// Fetch user data when the user is authenticated
+// Obtener datos del usuario cuando el usuario está autenticado
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         try {
-            // Get user document reference using email instead of UID
+            // Obtener referencia del documento del usuario usando el email en lugar del UID
             const docRef = doc(db, "Bonos generados", user.email);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const userData = docSnap.data();
                 
-                // Display user data
+                // Mostrar datos del usuario
                 userName.textContent = `${userData.nombre || ''} ${userData.apellido || ''}`.trim();
                 userEmail.textContent = userData.email ? `Email: ${userData.email}` : '';
                 userPhoto.src = userData.foto || "./perfil.png";
@@ -44,37 +44,37 @@ onAuthStateChanged(auth, async (user) => {
                 // Guardar el email del usuario en localStorage
                 localStorage.setItem("userEmail", userData.email);
             } else {
-                console.log("No user data found");
+                console.log("No se encontraron datos del usuario");
             }
         } catch (error) {
-            console.error("Error fetching user data:", error);
+            console.error("Error al obtener los datos del usuario:", error);
         }
     } else {
-        console.log("No user currently logged in");
-        window.location.href = "/index.html"; // Redirection in case the user is not logged in
+        console.log("No hay ningún usuario actualmente conectado");
+        window.location.href = "/index.html"; // Redirección en caso de que el usuario no esté conectado
     }
 });
 
-// Log out the user
+// Cerrar sesión del usuario
 document.getElementById("logout-btn").addEventListener("click", () => {
     signOut(auth).then(() => {
-        window.location.reload(); // Refresh the page after logging out
+        window.location.reload(); // Refrescar la página después de cerrar sesión
     }).catch((error) => {
-        console.error("Error during logout:", error);
+        console.error("Error durante el cierre de sesión:", error);
     });
 });
 
-// Toggle dark/light mode
+// Alternar entre modo oscuro/claro
 const toggleModeBtn = document.createElement("button");
 toggleModeBtn.id = "toggle-mode-btn";
 toggleModeBtn.textContent = "🌓";
-document.querySelector(".header").appendChild(toggleModeBtn); // This is where the toggle mode button is appended
+document.querySelector(".header").appendChild(toggleModeBtn); // Aquí se añade el botón de alternar modo
 
 toggleModeBtn.addEventListener("click", () => {
   document.body.classList.toggle("light-mode");
 });
 
-// Panel functionality
+// Funcionalidad del panel
 const mainContent = document.getElementById("main-content");
 
 async function loadContent(url) {
@@ -83,11 +83,11 @@ async function loadContent(url) {
         const content = await response.text();
         mainContent.innerHTML = content;
     } catch (error) {
-        console.error("Error loading content:", error);
+        console.error("Error al cargar el contenido:", error);
     }
 }
 
-// Function to format date to dd/mm/aa hh:mm
+// Función para formatear la fecha a dd/mm/aa hh:mm
 function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
@@ -98,11 +98,11 @@ function formatDate(date) {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
-// Function to fetch prestaciones from valores.csv
+// Función para obtener prestaciones desde valores.csv
 async function fetchPrestaciones() {
     const response = await fetch('valores.csv');
     const data = await response.text();
-    const lines = data.split('\n').slice(1); // Skip header
+    const lines = data.split('\n').slice(1); // Saltar el encabezado
     const prestaciones = lines.map(line => {
         const [prestacion, monto] = line.split(',');
         return { prestacion, monto: parseFloat(monto) };
@@ -110,7 +110,7 @@ async function fetchPrestaciones() {
     return prestaciones;
 }
 
-// Function to display the form in the main content
+// Función para mostrar el formulario en el contenido principal
 async function displayForm() {
     const prestaciones = await fetchPrestaciones();
 
@@ -172,20 +172,19 @@ async function displayForm() {
                     prestacion,
                     fecha,
                     importe,
-                    comprobante: fileURL
+                    comprobante: fileURL,
+                    usuario: userEmail // Guardar el email del usuario que generó el cupón
                 });
-
-               
 
                 alert("Cupón generado exitosamente"); // Asegurar que se muestre la alerta
 
                 // Limpiar los campos del formulario
                 e.target.reset();
 
-                // Trigger change event to reset importe value
+                // Disparar evento de cambio para restablecer el valor del importe
                 prestacionSelect.dispatchEvent(new Event('change'));
 
-                // Generate PDF
+                // Generar PDF
                 generatePDF({
                     nombre,
                     dni,
@@ -196,23 +195,21 @@ async function displayForm() {
                     comprobante: fileURL
                 }, cuponRef.id);
             } else {
-                console.error("No user email found in localStorage");
+                console.error("No se encontró el email del usuario en localStorage");
             }
         } catch (error) {
-            console.error("Error generating cupon:", error);
+            console.error("Error al generar el cupón:", error);
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = "Generar Cupón"; // Restaurar el texto del botón
         }
     });
 
-    // Trigger change event to set initial importe value
+    // Disparar evento de cambio para establecer el valor inicial del importe
     prestacionSelect.dispatchEvent(new Event('change'));
 }
 
-
-
-// Function to display the cupones in a table
+// Función para mostrar los cupones en una tabla
 async function displayCupones() {
     mainContent.innerHTML = `
         <h2>Cupones Generados</h2>
@@ -228,6 +225,7 @@ async function displayCupones() {
                     <th>Fecha</th>
                     <th>Importe</th>
                     <th>Comprobante</th>
+                    <th>Usuario</th> <!-- Nueva columna para el usuario -->
                 </tr>
             </thead>
             <tbody></tbody>
@@ -251,12 +249,13 @@ async function displayCupones() {
                 <td>${formatDate(cuponData.fecha)}</td>
                 <td>${cuponData.importe}</td>
                 <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
+                <td>${cuponData.usuario || 'Desconocido'}</td> <!-- Mostrar el usuario -->
             `;
             row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, doc.id));
             tbody.appendChild(row);
         });
 
-        // Add event listener for filtering
+        // Añadir evento para filtrar
         document.getElementById("filter-afiliado").addEventListener("input", function() {
             const filterValue = this.value.toLowerCase();
             const rows = tbody.getElementsByTagName("tr");
@@ -273,14 +272,14 @@ async function displayCupones() {
             }
         });
     } catch (error) {
-        console.error("Error fetching cupones:", error);
+        console.error("Error al obtener los cupones:", error);
     }
 }
 
 async function generatePDF(cuponData, docId) {
     const { nombre, dni, nro_afiliado, prestacion, fecha, importe, comprobante } = cuponData;
 
-    // Verificamos si el comprobante es una imagen o un PDF
+    // Verificar si el comprobante es una imagen o un PDF
     const isImage = comprobante && /\.(jpeg|jpg|png|gif)$/i.test(comprobante);
     const isPDF = comprobante && /\.pdf$/i.test(comprobante);
 
