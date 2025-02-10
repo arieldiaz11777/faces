@@ -21,7 +21,8 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Variables para la información del usuario
-const userName = document.getElementById("user-name");
+const userPrestadora = document.getElementById("user-prestadora");
+const userDireccion = document.getElementById("user-direccion");
 const userEmail = document.getElementById("user-email");
 const userPhoto = document.querySelector(".user-photo");
 
@@ -30,16 +31,17 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         try {
             // Obtener referencia del documento del usuario usando el email en lugar del UID
-            const docRef = doc(db, "Bonos generados", user.email);
+            const docRef = doc(db, "Prestadores", user.email);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const userData = docSnap.data();
                 
                 // Mostrar datos del usuario
-                userName.textContent = `${userData.nombre || ''} ${userData.apellido || ''}`.trim();
-                userEmail.textContent = userData.email ? `Email: ${userData.email}` : '';
-                userPhoto.src = userData.foto || "./perfil.png";
+                if (userPrestadora) userPrestadora.textContent = userData.prestadora || 'Prestadora de Servicio';
+                if (userDireccion) userDireccion.textContent = userData.direccion ? `Direccion: ${userData.direccion}` : 'Direccion: ';
+                if (userEmail) userEmail.textContent = userData.email ? `Email: ${userData.email}` : 'Email: ';
+                if (userPhoto) userPhoto.src = userData.foto || "./perfil.png";
 
                 // Guardar el email del usuario en localStorage
                 localStorage.setItem("userEmail", userData.email);
@@ -309,7 +311,7 @@ async function displayUserList() {
     `;
 
     try {
-        const usersQuery = query(collection(db, "Bonos generados"));
+        const usersQuery = query(collection(db, "Prestadores"));
         const querySnapshot = await getDocs(usersQuery);
         const userList = document.getElementById("user-list");
 
@@ -317,7 +319,7 @@ async function displayUserList() {
             const userData = doc.data();
             if (userData.email !== "todocodigos1177@gmail.com") {
                 const listItem = document.createElement("li");
-                listItem.textContent = `${userData.nombre || ''} ${userData.apellido || ''}`.trim();
+                listItem.textContent = `${userData.prestadora || ''} ${userData.direccion || ''}`.trim();
                 listItem.addEventListener("click", () => displayUserCupones(userData.email));
                 userList.appendChild(listItem);
             }
