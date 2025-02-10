@@ -89,12 +89,12 @@ async function loadContent(url) {
     }
 }
 
-// Función para formatear la fecha a dd/mm/aa hh:mm
+// Función para formatear la fecha a dd/mm/aaaa hh:mm
 function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = String(d.getFullYear()).slice(-2);
+    const year = d.getFullYear();
     const hours = String(d.getHours()).padStart(2, '0');
     const minutes = String(d.getMinutes()).padStart(2, '0');
     return `${day}/${month}/${year} ${hours}:${minutes}`;
@@ -124,8 +124,16 @@ async function displayForm() {
 // Función para mostrar los cupones en una tabla
 async function displayCupones() {
     mainContent.innerHTML = `
-        <h2>Cupones Generados</h2>
-        <input type="text" id="filter-afiliado" placeholder="Filtrar por N° Afiliado">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Cupones Generados</h2>
+            <p id="total-importe" style="margin: 0;"></p>
+        </div>
+        <div class="filter-container">
+            <input type="text" id="filter-afiliado" placeholder="Filtrar por N° Afiliado">
+            <input type="text" id="filter-prestacion" placeholder="Filtrar por Prestación">
+            <input type="datetime-local" id="filter-fecha" placeholder="Filtrar por Fecha y Hora">
+            <input type="text" id="filter-usuario" placeholder="Filtrar por Usuario">
+        </div>
         <table id="cupones-table">
             <thead>
                 <tr>
@@ -149,8 +157,14 @@ async function displayCupones() {
         const querySnapshot = await getDocs(cuponesQuery);
         const tbody = document.querySelector("#cupones-table tbody");
 
-        querySnapshot.forEach((doc) => {
-            const cuponData = doc.data();
+        let totalImporte = 0;
+
+        for (const docSnapshot of querySnapshot.docs) {
+            const cuponData = docSnapshot.data();
+            const userDocRef = doc(db, "Prestadores", cuponData.usuario);
+            const userDoc = await getDoc(userDocRef);
+            const userPrestadora = userDoc.exists() ? userDoc.data().prestadora : 'Desconocido';
+
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td><button class="pdf-btn">📄</button></td>
@@ -161,30 +175,54 @@ async function displayCupones() {
                 <td>${formatDate(cuponData.fecha)}</td>
                 <td>${cuponData.importe}</td>
                 <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
-                <td>${cuponData.usuario || 'Desconocido'}</td> <!-- Mostrar el usuario -->
+                <td>${userPrestadora}</td> <!-- Mostrar el usuario -->
             `;
-            row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, doc.id));
+            row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, docSnapshot.id));
             tbody.appendChild(row);
-        });
 
-        // Añadir evento para filtrar
-        document.getElementById("filter-afiliado").addEventListener("input", function() {
-            const filterValue = this.value.toLowerCase();
-            const rows = tbody.getElementsByTagName("tr");
-            for (let i = 0; i < rows.length; i++) {
-                const afiliadoCell = rows[i].getElementsByTagName("td")[3];
-                if (afiliadoCell) {
-                    const afiliadoText = afiliadoCell.textContent || afiliadoCell.innerText;
-                    if (afiliadoText.toLowerCase().indexOf(filterValue) > -1) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
-                }
-            }
-        });
+            totalImporte += parseFloat(cuponData.importe) || 0;
+        }
+
+        document.getElementById("total-importe").textContent = `Total Importe: $${totalImporte.toFixed(2)}`;
+
+        // Añadir eventos para filtrar
+        document.getElementById("filter-afiliado").addEventListener("input", filterTable);
+        document.getElementById("filter-prestacion").addEventListener("input", filterTable);
+        document.getElementById("filter-fecha").addEventListener("input", filterTable);
+        document.getElementById("filter-usuario").addEventListener("input", filterTable);
     } catch (error) {
         console.error("Error al obtener los cupones:", error);
+    }
+}
+
+function filterTable() {
+    const filterAfiliado = document.getElementById("filter-afiliado").value.toLowerCase();
+    const filterPrestacion = document.getElementById("filter-prestacion").value.toLowerCase();
+    const filterFecha = document.getElementById("filter-fecha").value;
+    const filterUsuario = document.getElementById("filter-usuario").value.toLowerCase();
+    const rows = document.querySelector("#cupones-table tbody").getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const afiliadoCell = rows[i].getElementsByTagName("td")[3];
+        const prestacionCell = rows[i].getElementsByTagName("td")[4];
+        const fechaCell = rows[i].getElementsByTagName("td")[5];
+        const usuarioCell = rows[i].getElementsByTagName("td")[8];
+
+        const afiliadoText = afiliadoCell ? afiliadoCell.textContent.toLowerCase() : "";
+        const prestacionText = prestacionCell ? prestacionCell.textContent.toLowerCase() : "";
+        const fechaText = fechaCell ? fechaCell.textContent : "";
+        const usuarioText = usuarioCell ? usuarioCell.textContent.toLowerCase() : "";
+
+        const matchesAfiliado = afiliadoText.includes(filterAfiliado);
+        const matchesPrestacion = prestacionText.includes(filterPrestacion);
+        const matchesFecha = fechaText.includes(filterFecha.replace("T", " "));
+        const matchesUsuario = usuarioText.includes(filterUsuario);
+
+        if (matchesAfiliado && matchesPrestacion && matchesFecha && matchesUsuario) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
     }
 }
 
@@ -367,8 +405,12 @@ async function displayUserCupones(email) {
         let cuponCount = 0;
         let totalImporte = 0;
 
-        querySnapshot.forEach((doc) => {
-            const cuponData = doc.data();
+        for (const docSnapshot of querySnapshot.docs) {
+            const cuponData = docSnapshot.data();
+            const userDocRef = doc(db, "Prestadores", cuponData.usuario);
+            const userDoc = await getDoc(userDocRef);
+            const userPrestadora = userDoc.exists() ? userDoc.data().prestadora : 'Desconocido';
+
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td><button class="pdf-btn">📄</button></td>
@@ -379,14 +421,14 @@ async function displayUserCupones(email) {
                 <td>${formatDate(cuponData.fecha)}</td>
                 <td>${cuponData.importe}</td>
                 <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
-                <td>${cuponData.usuario || 'Desconocido'}</td>
+                <td>${userPrestadora}</td>
             `;
-            row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, doc.id));
+            row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, docSnapshot.id));
             tbody.appendChild(row);
 
             cuponCount++;
             totalImporte += parseFloat(cuponData.importe) || 0;
-        });
+        }
 
         document.getElementById("cupones-count").textContent = `Cantidad de cupones: ${cuponCount}`;
         document.getElementById("total-importe").textContent = `Total Importe: $${totalImporte.toFixed(2)}`;
