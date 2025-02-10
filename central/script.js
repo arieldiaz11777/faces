@@ -227,7 +227,12 @@ function filterTable() {
 }
 
 async function generatePDF(cuponData, docId) {
-    const { nombre, dni, nro_afiliado, prestacion, fecha, importe, comprobante } = cuponData;
+    const { nombre, dni, nro_afiliado, prestacion, fecha, importe, comprobante, usuario } = cuponData;
+
+    // Fetch the prestadora name
+    const userDocRef = doc(db, "Prestadores", usuario);
+    const userDoc = await getDoc(userDocRef);
+    const prestadora = userDoc.exists() ? userDoc.data().prestadora : 'Desconocido';
 
     // Verificar si el comprobante es una imagen o un PDF
     const isImage = comprobante && /\.(jpeg|jpg|png|gif)$/i.test(comprobante);
@@ -305,7 +310,7 @@ async function generatePDF(cuponData, docId) {
                 <p><strong>Prestación:</strong> ${prestacion}</p>
                 <p><strong>Fecha:</strong> ${formatDate(fecha)}</p>
                 <p><strong>Importe:</strong> $${importe}</p>
-                
+                <p><strong>Generado por:</strong> ${prestadora}</p>
                 <p class="comprobante">
                     <strong>Comprobante:</strong> 
                     ${comprobante ? `<a href="${comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}
