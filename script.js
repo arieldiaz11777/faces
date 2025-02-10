@@ -123,7 +123,7 @@ loginForm.addEventListener("submit", async (e) => {
         updateProgressBar(progressBar, 100);
         showAlert("Inicio de sesión exitoso. ¡Bienvenido/a!");
 
-        if (user.email.toLowerCase() === "todocodigos1177@gmail.com") {
+        if (user.email.toLowerCase() === "mariamayala14@gmail.com") {
             window.location.href = "./central/index.html";
         } else {
             window.location.href = "./dashboard/index.html";
