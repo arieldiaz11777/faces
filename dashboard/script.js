@@ -252,7 +252,7 @@ async function displayCupones() {
                     <td>${cuponData.prestacion}</td>
                     <td>${formatDate(cuponData.fecha)}</td>
                     <td>${cuponData.importe}</td>
-                    <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Ver Comprobante</a>` : 'No registra pago'}</td>
+                    <td>${cuponData.comprobante ? `<a href="${cuponData.comprobante}" target="_blank">Imprimir comprobante a adjuntar </a>` : 'No registra pago'}</td>
                 `;
                 row.querySelector(".pdf-btn").addEventListener("click", () => generatePDF(cuponData, doc.id));
                 tbody.appendChild(row);
