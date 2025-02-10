@@ -347,6 +347,48 @@ body {
     color: #000;
     border: 1px solid #ccc;
   }
+
+  #filter-afiliado, #filter-prestacion, #filter-fecha, #filter-usuario {
+    width: 90%;
+    padding: 10px;
+    margin: 10px auto;
+    display: block;
+    border: 1px solid #444;
+    border-radius: 25px;
+    background-color: #222;
+    color: #ccc;
+  }
+  
+  body.light-mode #filter-afiliado, 
+  body.light-mode #filter-prestacion, 
+  body.light-mode #filter-fecha, 
+  body.light-mode #filter-usuario {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+  }
+
+  .filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px auto;
+    width: 90%;
+  }
+  
+  .filter-container input {
+    width: 22%;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 25px;
+    background-color: #222;
+    color: #ccc;
+  }
+  
+  body.light-mode .filter-container input {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+  }
   
   /* Animación de espera para el envío del formulario */
   #cuponForm button:disabled {
