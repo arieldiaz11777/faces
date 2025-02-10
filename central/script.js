@@ -343,7 +343,7 @@ displayCupones();
 // Función para mostrar la lista de usuarios
 async function displayUserList() {
     mainContent.innerHTML = `
-        <h2>Lista de Usuarios</h2>
+        <h2>Lista de prestadores</h2>
         <ul id="user-list"></ul>
     `;
 
