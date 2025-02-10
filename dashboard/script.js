@@ -21,7 +21,8 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Variables for user info
-const userName = document.getElementById("user-name");
+const userPrestadora = document.getElementById("user-prestadora");
+const userDireccion = document.getElementById("user-direccion");
 const userEmail = document.getElementById("user-email");
 const userPhoto = document.querySelector(".user-photo");
 
@@ -30,16 +31,17 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         try {
             // Get user document reference using email instead of UID
-            const docRef = doc(db, "Bonos generados", user.email);
+            const docRef = doc(db, "Prestadores", user.email);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const userData = docSnap.data();
                 
                 // Display user data
-                userName.textContent = `${userData.nombre || ''} ${userData.apellido || ''}`.trim();
-                userEmail.textContent = userData.email ? `Email: ${userData.email}` : '';
-                userPhoto.src = userData.foto || "./perfil.png";
+                if (userPrestadora) userPrestadora.textContent = userData.prestadora || 'Prestadora de Servicio';
+                if (userDireccion) userDireccion.textContent = userData.direccion ? `Direccion: ${userData.direccion}` : 'Direccion: ';
+                if (userEmail) userEmail.textContent = userData.email ? `Email: ${userData.email}` : 'Email: ';
+                if (userPhoto) userPhoto.src = userData.foto || "./perfil.png";
 
                 // Guardar el email del usuario en localStorage
                 localStorage.setItem("userEmail", userData.email);
@@ -159,12 +161,12 @@ async function displayForm() {
             if (userEmail) {
                 let fileURL = "";
                 if (comprobante) {
-                    const storageRef = ref(storage, `Bonos generados/${userEmail}/Cupones/${comprobante.name}`);
+                    const storageRef = ref(storage, `Prestadores/${userEmail}/Cupones/${comprobante.name}`);
                     await uploadBytes(storageRef, comprobante);
                     fileURL = await getDownloadURL(storageRef);
                 }
 
-                const cuponRef = doc(collection(db, "Bonos generados", userEmail, "Cupones"));
+                const cuponRef = doc(collection(db, "Prestadores", userEmail, "Cupones"));
                 await setDoc(cuponRef, {
                     nombre,
                     dni,
@@ -234,7 +236,7 @@ async function displayCupones() {
     try {
         const userEmail = localStorage.getItem("userEmail");
         if (userEmail) {
-            const cuponesQuery = query(collection(db, "Bonos generados", userEmail, "Cupones"));
+            const cuponesQuery = query(collection(db, "Prestadores", userEmail, "Cupones"));
             const querySnapshot = await getDocs(cuponesQuery);
             const tbody = document.querySelector("#cupones-table tbody");
 
