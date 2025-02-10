@@ -131,7 +131,6 @@ async function displayCupones() {
         <div class="filter-container">
             <input type="text" id="filter-afiliado" placeholder="Filtrar por N° Afiliado">
             <input type="text" id="filter-prestacion" placeholder="Filtrar por Prestación">
-            <input type="datetime-local" id="filter-fecha" placeholder="Filtrar por Fecha y Hora">
             <input type="text" id="filter-usuario" placeholder="Filtrar por Usuario">
         </div>
         <table id="cupones-table">
@@ -188,7 +187,6 @@ async function displayCupones() {
         // Añadir eventos para filtrar
         document.getElementById("filter-afiliado").addEventListener("input", filterTable);
         document.getElementById("filter-prestacion").addEventListener("input", filterTable);
-        document.getElementById("filter-fecha").addEventListener("input", filterTable);
         document.getElementById("filter-usuario").addEventListener("input", filterTable);
     } catch (error) {
         console.error("Error al obtener los cupones:", error);
@@ -198,27 +196,23 @@ async function displayCupones() {
 function filterTable() {
     const filterAfiliado = document.getElementById("filter-afiliado").value.toLowerCase();
     const filterPrestacion = document.getElementById("filter-prestacion").value.toLowerCase();
-    const filterFecha = document.getElementById("filter-fecha").value;
     const filterUsuario = document.getElementById("filter-usuario").value.toLowerCase();
     const rows = document.querySelector("#cupones-table tbody").getElementsByTagName("tr");
 
     for (let i = 0; i < rows.length; i++) {
         const afiliadoCell = rows[i].getElementsByTagName("td")[3];
         const prestacionCell = rows[i].getElementsByTagName("td")[4];
-        const fechaCell = rows[i].getElementsByTagName("td")[5];
         const usuarioCell = rows[i].getElementsByTagName("td")[8];
 
         const afiliadoText = afiliadoCell ? afiliadoCell.textContent.toLowerCase() : "";
         const prestacionText = prestacionCell ? prestacionCell.textContent.toLowerCase() : "";
-        const fechaText = fechaCell ? fechaCell.textContent : "";
         const usuarioText = usuarioCell ? usuarioCell.textContent.toLowerCase() : "";
 
         const matchesAfiliado = afiliadoText.includes(filterAfiliado);
         const matchesPrestacion = prestacionText.includes(filterPrestacion);
-        const matchesFecha = fechaText.includes(filterFecha.replace("T", " "));
         const matchesUsuario = usuarioText.includes(filterUsuario);
 
-        if (matchesAfiliado && matchesPrestacion && matchesFecha && matchesUsuario) {
+        if (matchesAfiliado && matchesPrestacion && matchesUsuario) {
             rows[i].style.display = "";
         } else {
             rows[i].style.display = "none";
